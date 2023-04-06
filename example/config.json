@@ -1,0 +1,13 @@
+{
+    "type" : "application",
+
+    "configuration" : {
+                        "name": 0, 
+                        "version": 1, 
+                        "type": 2, 
+                        "supplier": 3
+                    },
+
+    "add_purl" : "true"
+
+}
