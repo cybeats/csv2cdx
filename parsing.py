@@ -7,6 +7,7 @@ from cyclonedx.model import OrganizationalEntity, OrganizationalContact, XsUri
 from uuid import uuid4
 from cyclonedx.output import get_instance, BaseOutput, OutputFormat
 import re
+from packageurl import PackageURL
 
 
 
@@ -136,7 +137,8 @@ class Builder:
         if package == None:
             package = 'generic'
         purl = "pkg:{}/{}@{}".format(package, name, version)
-        return purl
+        purl_formatted  = PackageURL.from_string(purl)
+        return purl_formatted
 
 
     
@@ -194,7 +196,7 @@ class Builder:
                                             name= name,       
                                             version=version, 
                                             purl=self.purl, 
-                                            component_type=self.type, 
+                                            type=self.type, 
                                             supplier=self.supplier, 
                                             swid=val[key].get(self.control.get("swid", None)), 
                                             cpe=self.cpe
@@ -226,7 +228,7 @@ class Builder:
         
         self.bom.metadata.component = Component(
                                                     name=config.get("sbom_component_name", None), 
-                                                    component_type=ComponentType(config.get("sbom_type", None)),
+                                                    type=ComponentType(config.get("sbom_type", None)),
                                                     namespace= config.get("namespace", None),
                                                     version= version                                                   
                                                 )   
