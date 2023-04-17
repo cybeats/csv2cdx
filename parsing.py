@@ -26,21 +26,23 @@ class Parser:
 
     def parse_excel(self,file, header) -> pd.DataFrame:
         file_extension = pathlib.Path(file).suffix
-        
-        print("loading {filename}...\n".format(filename=file))
+        file_data = None
+
+        print("loading {filename}...".format(filename=file))
 
         if file_extension == ".xlsx":
             file_data = pd.read_excel(file, header=header)
-            return file_data
         
         elif file_extension == ".csv":
             file_data = pd.read_csv(file, header=header)
-            return file_data
         
         else:
             print("invalid data file, exiting...\n")
             exit(0)
-    
+
+        file_data = file_data.where(pd.notnull(file_data), None)
+        print("{filename} loaded".format(filename=file))
+        return file_data
 
 
     def read_excel(self) -> dict: 
@@ -53,7 +55,7 @@ class Parser:
         else:
             excel_df = self.parse_excel(self.excel, header=0) 
         
-
+        print(excel_df)
         self.excel_data = excel_df.to_dict('index')
         return self.excel_data
     
