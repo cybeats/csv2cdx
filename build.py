@@ -1,3 +1,4 @@
+
 import pandas as pd
 import json
 import cyclonedx
@@ -10,81 +11,6 @@ import re
 from packageurl import PackageURL
 import pathlib
 
-
-
-
-class Parser:
-
-    def __init__(self, excel_file:str, json_file:str) -> None:
-        self.excel = excel_file
-        self.json = json_file 
-        self.params = []
-        self.baseline = ["name", "version", "type"]
-        self.j_data = {}
-        self.excel_data = {}
-
-
-    def parse_excel(self,file, header) -> pd.DataFrame:
-        file_extension = pathlib.Path(file).suffix
-        file_data = None
-
-        print("loading {filename}...".format(filename=file))
-
-        if file_extension == ".xlsx":
-            file_data = pd.read_excel(file, header=header)
-        
-        elif file_extension == ".csv":
-            file_data = pd.read_csv(file, header=header)
-        
-        else:
-            print("invalid data file, exiting...\n")
-            exit(0)
-
-        file_data = file_data.where(pd.notnull(file_data), None)
-        print("{filename} loaded".format(filename=file))
-        return file_data
-
-
-    def read_excel(self) -> dict: 
-
-        if self.j_data.get("csv_no_title") is True:
-            excel_df = self.parse_excel(self.excel, header=None)
-            index = [x for x in range(len(excel_df.columns))]
-            excel_df.columns = index
-        
-        else:
-            excel_df = self.parse_excel(self.excel, header=0) 
-        
-        print(excel_df)
-        self.excel_data = excel_df.to_dict('index')
-        return self.excel_data
-    
-    def read_json(self) -> dict: 
-        with open(self.json, "r") as jd: 
-            self.j_data = json.load(jd)
-            return self.j_data
-     
-    
-    def check_if_subset(self, superset, subset):
-        flag = 0
-        if(all(x in superset for x in subset)):
-            flag = 1
-        else:
-            flag = 0
-        return flag
-        
-   
-    def get_param(self) -> list:
-        if not self.excel_data or self.j_data:
-            self.read_excel()
-            self.read_json()
-        self.params = self.excel_data.columns.values.tolist()
-        if (self.check_if_subset(self.baseline, self.params)):
-            return self.params
-        else:
-            print("error: neccessary parameters missing")
-            exit()
-                                                                                                                                                                                                                                                                                                                                                                                                      
 
 
 class Builder:
