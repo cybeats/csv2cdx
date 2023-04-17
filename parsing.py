@@ -8,6 +8,7 @@ from uuid import uuid4
 from cyclonedx.output import get_instance, BaseOutput, OutputFormat
 import re
 from packageurl import PackageURL
+import pathlib
 
 
 
@@ -23,15 +24,34 @@ class Parser:
         self.excel_data = {}
 
 
+    def parse_excel(self,file, header) -> pd.DataFrame:
+        file_extension = pathlib.Path(file).suffix
+        
+        print("loading {filename}...\n".format(filename=file))
+
+        if file_extension == ".xlsx":
+            file_data = pd.read_excel(file, header=header)
+            return file_data
+        
+        elif file_extension == ".csv":
+            file_data = pd.read_csv(file, header=header)
+            return file_data
+        
+        else:
+            print("invalid data file, exiting...\n")
+            exit(0)
+    
+
+
     def read_excel(self) -> dict: 
 
         if self.j_data.get("csv_no_title") is True:
-            excel_df = pd.read_excel(self.excel, header=None)
+            excel_df = self.parse_excel(self.excel, header=None)
             index = [x for x in range(len(excel_df.columns))]
             excel_df.columns = index
         
         else:
-            excel_df = pd.read_excel(self.excel)   
+            excel_df = self.parse_excel(self.excel, header=0) 
         
 
         self.excel_data = excel_df.to_dict('index')
