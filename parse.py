@@ -8,7 +8,7 @@ from uuid import uuid4
 from cyclonedx.output import get_instance, BaseOutput, OutputFormat
 import re
 from packageurl import PackageURL
-import pathlib
+from pathlib import Path
 import argparse
 
 
@@ -75,9 +75,9 @@ class Parser:
         return parameters
 
 
-
+    #check is input file is .csv or .xlsx
     def parse_csv(self,file, header) -> pd.DataFrame:
-        file_extension = pathlib.Path(file).suffix
+        file_extension = Path(file).suffix
         file_data = None
 
         print("loading {filename}...".format(filename=file))
@@ -97,13 +97,13 @@ class Parser:
         return file_data
 
 
-
+    #reads csv
     def read_csv(self, file) -> pd.DataFrame: 
 
         if self.arg_data.get("csv_no_title") is True:
             csv_df = self.parse_csv(file, header=None)
             index = [x for x in range(len(csv_df.columns))]
-            print("assigning headers based on column....")
+            print("no column names, assigning headers based on column index")
             csv_df.columns = index
         
         else:
@@ -112,7 +112,7 @@ class Parser:
         #data = csv_df.to_dict('index')
         return csv_df
     
-    
+    #reads json
     def read_json(self, file) -> dict: 
         data = {}
         with open(file, "r") as jd: 
@@ -121,7 +121,7 @@ class Parser:
         return data
     
         
-
+    #gets all arguement, csv and json data
     def get_data(self) -> dict:
         self.arg_data = self.get_args()
         self.csv_data = self.read_csv(self.arg_data.get("file"))
