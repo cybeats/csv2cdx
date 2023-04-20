@@ -8,7 +8,9 @@ from cyclonedx.output import get_instance, BaseOutput, OutputFormat
 from packageurl import PackageURL
 from pathlib import Path
 from time import sleep
-
+import os
+import warnings
+warnings.filterwarnings("ignore", message="The Component this BOM is describing None has no defined dependencies which means the Dependency Graph is incomplete - you should add direct dependencies to this Componentto complete the Dependency Graph data.")
 
 
 
@@ -146,7 +148,7 @@ class Builder2:
     def build_component(self, iteration:int, total:int, csv_data:pd.DataFrame, config_data:dict) -> Component:
 
         percentage = ((iteration + 1) / total * 100)
-        #print("\rassembling components-{}%".format(int(percentage)), sep=' ', end='', flush=True)
+        print("\rgetting components-{}%".format(int(percentage)), sep=' ', end='', flush=True)
         
         name = config_data.get("name")
         version = config_data.get("version")
@@ -230,9 +232,9 @@ class Builder2:
         config_data=config_data.get("component_configuration")
         total = len(csv_data)
         try:
-            print("assembling components...", end="")
+            print("getting components...", end="")
             components = [self.build_component(i, total, x, config_data) for i, x in csv_data.iterrows()]
-            print("\n\rcomponents assembled")
+            print("\r")
             return components
         except Exception as err:
             print(err)
@@ -301,11 +303,20 @@ class Builder2:
                     components=components,
                     metadata=metadata
             )
-
         outputter: BaseOutput = get_instance(bom=bom, output_format=OutputFormat.JSON)
-        bom_json: str = outputter.output_as_string()
-        outputter.output_to_file(self.ouput_file)
-        print(bom_json)
+        print("sbom assembled, outputting to {}".format(self.ouput_file))
+        #outputter.output_to_file(self.ouput_file)
+        try:
+            outputter.output_to_file(self.ouput_file)
+        except FileExistsError:
+            answer = input("this sbom already exists. do you want to overwrite? (Y/N):   ")
+            if answer == "y" or "Y":
+                print("overwriting file...")
+                os.remove(self.ouput_file)
+                outputter.output_to_file(self.ouput_file)
+        print("finished. have a nice day!")
+
+
 
 
 

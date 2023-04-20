@@ -93,7 +93,7 @@ class Parser:
             exit(0)
 
         file_data = file_data.where(pd.notnull(file_data), None)
-        print("{filename} loaded".format(filename=file))
+        print("csv {filename} loaded".format(filename=file))
         return file_data
 
 
@@ -117,7 +117,7 @@ class Parser:
         data = {}
         with open(file, "r") as jd: 
             data = json.load(jd)
-
+        print("json {filename} loaded".format(filename=file))
         return data
     
         
