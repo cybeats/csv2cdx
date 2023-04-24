@@ -25,6 +25,7 @@ class Builder2:
 
 
     def get_hash_algo(self, algorithm):
+        res=None
         try:
             res = HashAlgorithm(algorithm)
         except:
@@ -135,7 +136,7 @@ class Builder2:
         return s_url
     
 
-    def cpe_wildcard(cpe :str):
+    def cpe_wildcard(self, cpe :str):
         cpe = cpe.split(":")
         if "cpe" != cpe[0]:
             return None 
@@ -158,7 +159,7 @@ class Builder2:
     
         name = config_data.get("name")
         version = config_data.get("version")
-        type = config_data.get("type")
+        # type = config_data.get("type")
         bom_ref = config_data.get("bom_ref")
         group = config_data.get("group")
         publisher = config_data.get("publisher")
@@ -179,23 +180,41 @@ class Builder2:
 
         name = csv_data.get(name)
         version = csv_data.get(version)
-        type = ComponentType(csv_data.get(type))
+        # type = ComponentType(csv_data.get(type))
         bom_ref = csv_data.get(bom_ref)
         group = csv_data.get(group)
         publisher = csv_data.get(publisher)
 
+        try:
+            purl = PackageURL.from_string(csv_data.get(purl))
+        except:
+            purl=None
 
-        purl = PackageURL.from_string(csv_data.get(purl))
+        if (purl is None) and (self.arg_data.get("add_purl") is True):
+            purl = self.make_purl("generic", name, version)
 
+        if any(any(license.values()) for license in licenses):
+            licenses = self.get_licenses(licenses, csv_data)
+        else:
+            licenses = None
 
-        licenses = self.get_licenses(licenses, csv_data)
-        hashes = self.get_hashes(hashes, csv_data)
-        externalReferences = self.get_exRefs(externalReferences, csv_data)
+        if any(any(hash.values()) for hash in hashes):
+            hashes = self.get_hashes(hashes, csv_data)
+        else:
+            hashes = None
+            
+        
+        if any(any(externalreference.values()) for externalreference in externalReferences):
+            externalReferences = self.get_exRefs(externalReferences, csv_data)
+        else:
+            externalReferences = None
 
         mime_type = csv_data.get(mime_type)
         description = csv_data.get(description)
         author = csv_data.get(author)
         cpe = csv_data.get(cpe)
+        if self.arg_data.get("cpe_wildcard") is True:
+            cpe = self.cpe_wildcard(cpe)
         swid = csv_data.get(swid)
         pedigree = csv_data.get(pedigree)
         components = csv_data.get(components)
@@ -207,7 +226,7 @@ class Builder2:
         sbom_component = Component(   
                                         name = name,
                                         version = version,
-                                        type = type,
+                                        # type = type,
                                         bom_ref = bom_ref,
                                         group = group,
                                         publisher = publisher,
