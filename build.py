@@ -213,7 +213,7 @@ class Builder2:
         description = csv_data.get(description)
         author = csv_data.get(author)
         cpe = csv_data.get(cpe)
-        if self.arg_data.get("cpe_wildcard") is True:
+        if (self.arg_data.get("cpe_wildcard") is True) and (cpe is not None):
             cpe = self.cpe_wildcard(cpe)
         swid = csv_data.get(swid)
         pedigree = csv_data.get(pedigree)
