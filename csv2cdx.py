@@ -1,71 +1,33 @@
-import argparse
-import os
-import json
-import parsing
-from parsing import Parser, Builder
+from parse import Parser
+from build import Builder2
 
 
+if __name__ == "__main__":
+    parser = Parser()
 
-parser = argparse.ArgumentParser(description="CSV2CDX")
+    args, data, config = parser.get_data()
 
-parser.add_argument("-c", type=str, required=True, help="JSON Configuration File")
-parser.add_argument("-f", type=str, required=True, help="Excel File")
+    # print(type(data))
+    # print(len(data.columns))
 
-parser.add_argument("-pt", type=str, required=True, help="Package Type")
+    # print("\nsetup data")
+    # for k, v in args.items():
+    #     print(k, "=", v)
 
-parser.add_argument("-t", type=str, required=True, help="SBOM type")
+    # print("\nconfig data")
+    # for k, v in config.items():
+    #     print(k, "=", v)
 
-parser.add_argument("-pn", type=str, required=True, help="SBOM Component Name")
+    # print("\ncsv data")
+    # print(data)
 
-parser.add_argument("-pv", type=str, required=True, help="SBOM Component Version")
+    builder = Builder2(args, data, config)
 
-parser.add_argument("-mn", type=str, required=False, help="Manufacturer Name")
-
-parser.add_argument("-sn", type=str, required=False, help="Supplier Name")
-
-parser.add_argument("-ns", type=str, required=False, help="Namespace")
-
-parser.add_argument("-cw", type=str, required=False, help="CPE Wildcard")
-
-parser.add_argument("-ap", type=bool, required=False, help="Add PURL")
-
-parser.add_argument("-cnt", type=bool, required=False, default=True, help="CSV No Title")
-
-args=parser.parse_args()
-
-config_file = args.c 
-data_file = args.f 
+    # comp_list = builder.assemble_components(data, config)
+    #print(builder.ouput_file)
+    builder.build_sbom()
 
 
-config_parse = parsing.Parser(data_file, config_file)
-
-
-j_dict = config_parse.read_json()
-# csv_dict = config_parse.read_excel()
-
-
-j_dict["sbom_component_name"] = args.pn
-j_dict["sbom_component_version"] = args.pv
-j_dict["sbom_type"] = args.t
-j_dict["package_type"] = args.pt
-
-if args.ns:
-    j_dict["namespace"] = args.ns
-if args.cw:
-    j_dict["wildcard"] = args.cw
-if args.mn:
-    j_dict["manufacturer_name"] = args.mn
-if args.sn:
-    j_dict["supplier_name"] = args.sn
-if args.cnt:
-    j_dict["csv_no_title"] = args.cnt
-if args.ap:
-    j_dict["add_purl"] = args.ap
-
-csv_dict = config_parse.read_excel()
-
-build= parsing.Builder(csv_dict, j_dict)
-build.create_sbom()
 
 
 
