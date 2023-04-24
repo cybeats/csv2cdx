@@ -90,7 +90,10 @@ class Builder2:
         url = csv_data.get(reference.get("er_url"))
         if type_ref is None:
             return None
-        type_ref = ExternalReferenceType(type_ref)
+        try:
+            type_ref = ExternalReferenceType(type_ref)
+        except:
+            return None
         url = XsUri(url)
         exref_data = ExternalReference(
                                         type=type_ref, 
@@ -180,7 +183,7 @@ class Builder2:
 
         name = csv_data.get(name)
         if name is None:
-            pass
+            return None
         version = csv_data.get(version)
         # type = ComponentType(csv_data.get(type))
         bom_ref = csv_data.get(bom_ref)
@@ -323,6 +326,7 @@ class Builder2:
 
                             )
         components=self.assemble_components(self.csv_data, self.json_data)
+        components = [i for i in components if i is not None]
         
 
         bom = Bom(
