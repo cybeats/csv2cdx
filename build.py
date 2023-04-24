@@ -179,6 +179,8 @@ class Builder2:
         copyright = config_data.get("copyright")
 
         name = csv_data.get(name)
+        if name is None:
+            pass
         version = csv_data.get(version)
         # type = ComponentType(csv_data.get(type))
         bom_ref = csv_data.get(bom_ref)
