@@ -1,10 +1,8 @@
 # README
 
-This README would normally document whatever steps are necessary to get your application up and running.
-
 ### About the csv2cdx Tool
 
-This application enables you to capture legacy information about open-source software components contained in an Excel file and have that information converted into a Software Bills of Materials (SBOMs) file in JSON that conforms to the CycloneDX standard.
+This application enables you to capture legacy information about open-source software components contained in an Excel file and have that information converted into a Software Bill of Materials (SBOMs) file in JSON that conforms to the CycloneDX standard.
 
 The resulting SBOM file can be uploaded into SBOM Studio for analysis.
 
@@ -34,6 +32,46 @@ Source files in Excel (.xls, .xlsx, .csv)
    * To have the tool create a PURL if one does not already exist, set flag -ap
    * To instruct the tool to read a .csv file using column numbers instead of column names, set flag -cnt
 6. After setting the flags, the tool will save the output JSON file containing the SBOM information to the project folder
+
+```
+usage: csv2cdx.py [-h] -c C -f F -pt PT -t T -pn PN -pv PV [-mn MN] [-sn SN] [-ns NS] [-cw CW] [-ap AP] [-cnt CNT]
+
+csv2cdx
+
+optional arguments:
+  -h, --help  show this help message and exit
+  -c C        json configuration file
+  -f F        excel file
+  -pt PT      package type
+  -t T        sbom type
+  -pn PN      sbom component name
+  -pv PV      sbom component version
+  -mn MN      manufacturer name (optional)
+  -sn SN      supplier name (optional)
+  -ns NS      namespace (optional)
+  -cw CW      cpe wildcard (optional)
+  -ap AP      add purl (optional)
+  -cnt CNT    csv no title (optional)
+```
+
+
+Required flags:
+
+* -c: flag for the JSON configuration file
+* -f: flag for the .csv file
+* -pt:
+* -t:
+* -pn:
+* -pv:
+
+Optional flags:
+
+* -mn:
+* -sn:
+* -ns:
+* -cw:
+* -ap:
+* -cnt:
 
 ### Where to Get Support
 
