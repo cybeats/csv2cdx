@@ -136,7 +136,7 @@ Additionally there are optional flags for additional configuration:
 * -sn : "supplier name". Adds the name of the supplier for the component the sbom describes
 * -ns : "namespace". Adds the namespace of the component the sbom descibes
 * -cw : "cpe wildcard". Making this flag "True" wildcards any cpe in the sbom components e.g. `cpe:2.3:a:microsoft:internet_explorer:8.0` to `cpe:2.3:a:microsoft:internet_explorer:*`. (wildcarded version)
-* -ap : "add purl". Making this flag "True" adds PURLs to the components of the sboms. This is to be used if they do not already exist in the .csv file
+* -ap : "add purl". Making this flag "True" adds PURLs to the components of the sboms. This is to be used if they do not already exist in the .csv file. 
 * -cnt : "csv no title". Making this flag "True" indexes the .csv file by column number instead of name. As such, the configuration json format should look like:
 
   ```json
@@ -144,7 +144,6 @@ Additionally there are optional flags for additional configuration:
   "version": 1,
   "type": 2,
   ```
-
 
 #### Output
 
