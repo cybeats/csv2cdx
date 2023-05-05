@@ -150,6 +150,7 @@ class Builder2:
     def make_purl(self, package, name, version):
         if package == None:
             package = 'generic'
+        name = name.replace(" ", "_")
         purl = "pkg:{}/{}@{}".format(package, name, version)
         purl_formatted  = PackageURL.from_string(purl)
         return purl_formatted
