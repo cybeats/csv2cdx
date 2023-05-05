@@ -41,6 +41,7 @@ class Parser:
         parser.add_argument("-cw", type=bool, required=False, help="cpe wildcard (optional)" , default=None)
         parser.add_argument("-ap", type=bool, required=False, help="add purl (optional)", default=False)
         parser.add_argument("-cnt", type=bool, required=False, help="csv no title (optional)", default=False)
+        parser.add_argument("-api", type=bool, required=False, help="utilize cybeats api", default=False)
 
         args=parser.parse_args()
     
@@ -67,6 +68,10 @@ class Parser:
             parameters["cpe_wildcard"] = args.cw
             parameters["add_purl"] = args.ap
             parameters["csv_no_title"] = args.cnt
+            parameters["use_api"] = args.api
+
+
+
         except Exception as err:
             print(err)
             print("exiting...")
