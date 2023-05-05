@@ -1,8 +1,16 @@
 # Example
 
+This folder contains an example data.csv data file and example_config.json configuration file.
 
-This folder contains an example excel file and config.json file.
+The csv file contains synthetic data containing component :
 
-A resulting sbom.json can be made by running the command 
+* names
+* versions
+* hashes
+* descriptions
 
-`python3 ../csv2cdx.py -pn Example -pv 1.0.0 -t library  -c config.json -f SBOMcel.xlsx -pt pypi -cnt True  -ap True`
+A resulting sbom json file can be made by running the command
+
+```bash
+python3 ../csv2cdx.py -pn csv2cdx_example -pv 1.0.0 -t application -c example_config.json -f example_data.csv -pt generic 
+```
