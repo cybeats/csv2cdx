@@ -10,6 +10,7 @@ from pathlib import Path
 from time import sleep
 import os
 import warnings
+from cy_api import cybeats_API
 warnings.filterwarnings("ignore", message="The Component this BOM is describing None has no defined dependencies which means the Dependency Graph is incomplete - you should add direct dependencies to this Componentto complete the Dependency Graph data.")
 
 
@@ -17,11 +18,26 @@ warnings.filterwarnings("ignore", message="The Component this BOM is describing 
 
 class Builder2:
     def __init__(self, arg_data: dict,  csv_data :pd.DataFrame, json_data :dict):
-
+        
         self.arg_data = arg_data
         self.csv_data = csv_data
         self.json_data = json_data
+        self.api_config = self.json_data.get("api")
+        if self.arg_data.get("use_api") is True:
+            self.url_json = self.json_data.get("api_url")
+            self.url_arg = self.arg_data.get("api_url")
+            self.api_url = self.url_arg if self.url_arg is not None else self.url_json
+            self.api_access_key = self.arg_data.get("access_key")
+            self.api_secret_key = self.arg_data.get("secret_key")
+            if self.api_url is not None and self.api_access_key is not None and self.api_secret_key is not None:
+                self.api = cybeats_API(api_url=self.api_url, access_key=self.api_access_key, secret_key=self.api_secret_key, package_type=arg_data.get("package_type"))
+            else:
+                self.api = None
+        else:
+            self.api = None
+
         self.ouput_file = Path(self.arg_data.get("file"),"").stem + "_sbom.json"
+
 
 
     def get_hash_algo(self, algorithm):
@@ -78,6 +94,32 @@ class Builder2:
                                         license=license
                                     )
         return license_choice
+    
+    def get_licenses_from_api(self, licenses_from_api_) -> list:
+        licenses_api = [self.get_license_from_api(license_api) for license_api in licenses_from_api_]
+        licenses_api = [i for i in licenses_api if i is not None]
+        return licenses_api 
+    
+
+    def get_license_from_api(self, license_api_data):
+        url =license_api_data.get("url")
+        id=license_api_data.get("id")
+        name=license_api_data.get("name")
+        if url is not None:
+            url = XsUri(url)
+        if (name is None) and (id is None):
+            return
+        
+        license = License(  
+                            url=url,
+                            name=name,
+                            id=id
+                        )
+        license_choice = LicenseChoice( 
+                                        license=license
+                                    )
+        return license_choice
+    
 
     def get_exRefs(self, references, csv_data) ->list:
         exRefs = [self.get_exRef(reference, csv_data) for reference in references]
@@ -150,6 +192,7 @@ class Builder2:
     def make_purl(self, package, name, version):
         if package == None:
             package = 'generic'
+        name = name.replace(" ", "_")
         purl = "pkg:{}/{}@{}".format(package, name, version)
         purl_formatted  = PackageURL.from_string(purl)
         return purl_formatted
@@ -181,15 +224,6 @@ class Builder2:
         releaseNotes = config_data.get("releaseNotes")
         copyright = config_data.get("copyright")
 
-        name = csv_data.get(name)
-        if name is None:
-            return None
-        version = csv_data.get(version)
-        # type = ComponentType(csv_data.get(type))
-        bom_ref = csv_data.get(bom_ref)
-        group = csv_data.get(group)
-        publisher = csv_data.get(publisher)
-
         try:
             purl = PackageURL.from_string(csv_data.get(purl))
         except:
@@ -197,19 +231,45 @@ class Builder2:
 
         if (purl is None) and (self.arg_data.get("add_purl") is True):
             purl = self.make_purl("generic", name, version)
+        
+        if self.api is not None:
+            api_package_data = self.api.search_package(purl)
+            api_name = api_package_data.get("name")
+            api_version = api_package_data.get("version")
+            api_licenses = api_package_data.get("licenses")
+        else:
+            api_name = None
+            api_version = None
+            api_licenses = []
 
-        if any(any(license.values()) for license in licenses):
+        
+
+        name = csv_data.get(name, api_name)
+        if name is None:
+            return None
+        
+        version = csv_data.get(version, api_version)
+        # type = ComponentType(csv_data.get(type))
+        bom_ref = csv_data.get(bom_ref)
+        group = csv_data.get(group)
+        publisher = csv_data.get(publisher)
+
+
+        if licenses is not None and any(any(license.values()) for license in licenses):
             licenses = self.get_licenses(licenses, csv_data)
+        elif api_licenses is not None:
+            licenses = self.get_licenses_from_api(api_licenses)
         else:
             licenses = None
 
-        if any(any(hash.values()) for hash in hashes):
+
+        if hashes is not None and any(any(hash.values()) for hash in hashes):
             hashes = self.get_hashes(hashes, csv_data)
         else:
             hashes = None
-            
         
-        if any(any(externalreference.values()) for externalreference in externalReferences):
+        
+        if externalReferences is not None and any(any(externalreference.values()) for externalreference in externalReferences):
             externalReferences = self.get_exRefs(externalReferences, csv_data)
         else:
             externalReferences = None
@@ -218,8 +278,10 @@ class Builder2:
         description = csv_data.get(description)
         author = csv_data.get(author)
         cpe = csv_data.get(cpe)
+
         if (self.arg_data.get("cpe_wildcard") is True) and (cpe is not None):
             cpe = self.cpe_wildcard(cpe)
+        
         swid = csv_data.get(swid)
         pedigree = csv_data.get(pedigree)
         components = csv_data.get(components)
