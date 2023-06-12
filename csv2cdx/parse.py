@@ -41,10 +41,10 @@ class Parser:
         parser.add_argument("-cw", type=bool, required=False, help="cpe wildcard (optional)" , default=None)
         parser.add_argument("-ap", type=bool, required=False, help="add purl (optional)", default=False)
         parser.add_argument("-cnt", type=bool, required=False, help="csv no title (optional)", default=False)
-        parser.add_argument("-api", type=bool, required=False, help="utilize cybeats api", default=False)
-        parser.add_argument("-url", type=str, required=False, help="cybeats api url", default=None)
-        parser.add_argument("-ak", type=str, required=False, help="cybeats access key", default=None)
-        parser.add_argument("-sk", type=str, required=False, help="cybeats secret key", default=None)
+        parser.add_argument("-api", type=bool, required=False, help="utilize cybeats api(optional)", default=False)
+        parser.add_argument("-url", type=str, required=False, help="cybeats api url(optional)", default=None)
+        parser.add_argument("-ak", type=str, required=False, help="cybeats access key(optional)", default=None)
+        parser.add_argument("-sk", type=str, required=False, help="cybeats secret key(optional)", default=None)
 
         args=parser.parse_args()
     
