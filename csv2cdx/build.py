@@ -201,7 +201,7 @@ class Builder2:
     def build_component(self, iteration:int, total:int, csv_data:pd.DataFrame, config_data:dict) -> Component:
 
         percentage = ((iteration + 1) / total * 100)
-        print("\rgetting components-{}%".format(int(percentage)), sep=' ', end='', flush=True)
+        print("\rGetting components-{}%".format(int(percentage)), sep=' ', end='', flush=True)
     
         name = config_data.get("name")
         version = config_data.get("version")
@@ -321,7 +321,7 @@ class Builder2:
         config_data=config_data.get("component_configuration")
         total = len(csv_data)
         try:
-            print("getting components...", end="")
+            print("Getting components...", end="")
             components = [self.build_component(i, total, x, config_data) for i, x in csv_data.iterrows()]
             print("\r")
             return components
@@ -332,7 +332,7 @@ class Builder2:
 
     def create_metadata(self, setup_data:dict):
 
-        print("getting metadata")
+        print("Getting metadata...")
         metadata_manufacture = None
         metadata_component = None
         metadata_supplier = None
@@ -379,7 +379,7 @@ class Builder2:
     
     
     def build_sbom(self):
-        print("assembling sbom...")
+        print("Assembling SBOM...")
         metadata_component,metadata_manufacture, metadata_supplier = self.create_metadata(self.arg_data)
         metadata = BomMetaData(
                                 component=metadata_component,
@@ -396,16 +396,16 @@ class Builder2:
                     metadata=metadata
             )
         outputter: BaseOutput = get_instance(bom=bom, output_format=OutputFormat.JSON)
-        print("sbom assembled, outputting to {}".format(self.ouput_file))
+        print("SBOM assembled, outputting to {}".format(self.ouput_file))
         #outputter.output_to_file(self.ouput_file)
         try:
             outputter.output_to_file(self.ouput_file)
         except FileExistsError:
-            answer = input("this sbom file already exists. do you want to overwrite? (Y/N):   ")
+            answer = input("This sbom file already exists. do you want to overwrite? (Y/N):   ")
             if answer == ("y" or "Y"):
-                print("overwriting file...")
+                print("Overwriting file...")
                 os.remove(self.ouput_file)
                 outputter.output_to_file(self.ouput_file)
             else:
-                print("ok then")
-        print("finished. have a nice day!")
+                print("OK then")
+        print("Finished. Have a nice day!")

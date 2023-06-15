@@ -60,7 +60,7 @@ class Parser:
             parameters["sbom_version"] = args.pv
         except Exception as err:
             print(err)
-            print("exiting...")
+            print("Exiting...")
             exit(0)
 
         #optional parameters
@@ -79,7 +79,7 @@ class Parser:
 
         except Exception as err:
             print(err)
-            print("exiting...")
+            print("Exiting...")
             exit(0)
 
         return parameters
@@ -90,7 +90,7 @@ class Parser:
         file_extension = Path(file).suffix
         file_data = None
 
-        print("loading {filename}...".format(filename=file))
+        print("Loading {filename}...".format(filename=file))
 
         if file_extension == ".xlsx":
             file_data = pd.read_excel(file, header=header)
@@ -99,11 +99,11 @@ class Parser:
             file_data = pd.read_csv(file, header=header)
         
         else:
-            print("invalid data file, exiting...\n")
+            print("Invalid data file, exiting...\n")
             exit(0)
 
         file_data = file_data.where(pd.notnull(file_data), None)
-        print("csv {filename} loaded".format(filename=file))
+        print("CSV {filename} loaded".format(filename=file))
         return file_data
 
 
@@ -113,7 +113,7 @@ class Parser:
         if self.arg_data.get("csv_no_title") is True:
             csv_df = self.parse_csv(file, header=None)
             index = [x for x in range(len(csv_df.columns))]
-            print("no column names, assigning headers based on column index")
+            print("No column names, assigning headers based on column index")
             csv_df.columns = index
         
         else:
@@ -127,7 +127,7 @@ class Parser:
         data = {}
         with open(file, "r") as jd: 
             data = json.load(jd)
-        print("json {filename} loaded".format(filename=file))
+        print("JSON {filename} loaded".format(filename=file))
         return data
     
         
