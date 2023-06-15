@@ -14,13 +14,16 @@ In order to install csv2cdx the following prerequisites are required:
 * Python3
 * Pip
 
-Clone the repository to your local branch via the command:
+#### Automatic
 
-`git clone https://github.com/cybeats/csv2cdx.git`
+Install with command: `pip install git+https://github.com/cybeats/csv2cdx.git@main`
 
-Then, install the requirements via:
+#### Manual
 
-`pip install  -r requirements.txt`
+* Navigate to the dist/ folder in the repository
+* Download the csv2cdx-(version)-py3-none-any.whl file
+* Navigate to the file's location in your terminal/command prompt
+* Install with command: `pip install csv2cdx-(version)-py3-none-any.whl file`
 
 ### Usage
 
@@ -40,6 +43,7 @@ The .json configuration file is neccessary to translate the headers (or indexes)
 
 ```json
 {
+  "api_url":null,
   "component_configuration": {
     "name": null,
     "version": null,
@@ -118,7 +122,7 @@ For array fields such as licenses, hashes and external references, the requisite
 The basic command format to create a sbom json is the following:
 
 ```bash
-python3 csv2cdx.py -f (csv file path) -c (configuration json file path) -pn (name of sbom)  -pv (sbom version) -t (sbom type) -pt (sbom package type)
+python3 -m csv2cdx.py -f (csv file path) -c (configuration json file path) -pn (name of sbom)  -pv (sbom version) -t (sbom type) -pt (sbom package type)
 ```
 
 This command utilizes all neccessary flags:
@@ -144,13 +148,16 @@ Additionally there are optional flags for additional configuration:
   "version": 1,
   "type": 2,
   ```
+* -api: "utilize cybeats api". Making this flag "true" allows enrichment of data tnrough the cybeats api.
+* -url:  "cybeats api url". Adds the cybeats api url.
+* -ak:  "cybeats access key". Adds your cybeats api access key.
+* -sk:  "cybeats secret key". Adds your cybeats api secret key.
 
 #### Output
 
 ---
 
 the result should be a .json file in your current directory with the filename (name of your .csv file).json.
-
 
 ### Feedback
 

@@ -10,7 +10,7 @@ from pathlib import Path
 from time import sleep
 import os
 import warnings
-from cy_api import cybeats_API
+from .cy_api import cybeats_API
 warnings.filterwarnings("ignore", message="The Component this BOM is describing None has no defined dependencies which means the Dependency Graph is incomplete - you should add direct dependencies to this Componentto complete the Dependency Graph data.")
 
 
