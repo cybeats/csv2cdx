@@ -1,8 +1,8 @@
-from parse import Parser
-from build import Builder2
+import csv2cdx
+from .parse import Parser
+from .build import Builder2
 
-
-if __name__ == "__main__":
+def main():
     parser = Parser()
 
     args, data, config = parser.get_data()
@@ -11,7 +11,5 @@ if __name__ == "__main__":
 
     builder.build_sbom()
 
-
-
-
-
+if __name__ == "__main__":
+    main()

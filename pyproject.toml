@@ -1,0 +1,38 @@
+[project]
+name = "csv2cdx"
+version = "1.0.0"
+authors = [
+    {name = "Cybeats Technologies", email= "cs@cybeats.com"},
+]
+
+description = "CLI tool to convert excel and csv files to CycloneDX JSON files"
+readme = "README.md"
+requires-python = ">=3.7"
+license = {text = "MIT"}
+
+dependencies = [
+    "cyclonedx-python-lib>=4.0.0",
+    "packageurl-python>=0.10.4",
+    "pandas>=1.5.3",
+]
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+
+
+[project.urls]
+repository = "https://github.com/cybeats/csv2cdx"
+
+[project.scripts]
+csv2cdx = "csv2cdx.__main__:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tools.setuptools]
+packages = ["csv2cdx"]
