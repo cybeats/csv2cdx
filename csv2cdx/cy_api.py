@@ -6,11 +6,13 @@ import json
 import requests
 from packageurl import PackageURL
 
+
 class cybeats_API():
     def __init__(self, api_url, access_key, secret_key, package_type) -> None:
+        
         self.access_key = access_key
         self.secret_key = secret_key
-        self.cybeats_url = api_url
+        self.cybeats_url = api_url + "/v1/sboms/componentcatalog/packages"
 
         self.package_type = package_type
 
@@ -39,7 +41,7 @@ class cybeats_API():
     def get_software_catalog(self, pkgtype):
         timestamp = int(time.time())
         body = {"pkgType":pkgtype}
-        response = requests.post(self.cybeats_url, headers=self.build_headers(timestamp, body), data=json.dumps(body, separators=(',', ':')))
+        response = requests.post(self.cybeats_url , headers=self.build_headers(timestamp, body), data=json.dumps(body, separators=(',', ':')))
         code = response.status_code
         text = json.loads(response.text)
         return code, text
@@ -62,3 +64,8 @@ class cybeats_API():
             return self.package_data.get(purl_arg)
         else:
             return None
+
+
+
+
+
