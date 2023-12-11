@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "csv2cdx"
-version = "0.1.0"
+version = "1.0.1"
 description = "CLI tool to convert excel and csv files to CycloneDX JSON files"
 authors = ["Richard_E <restwick@cybeats.com>", "Cybeats <cs@cybeats.com"]
 license = "MIT"
@@ -11,7 +11,7 @@ repository = "https://github.com/cybeats/csv2cdx"
 [tool.poetry.dependencies]
 python = "^3.8"
 pandas = "^2.0.2"
-cyclonedx-python-lib = "^4.0.0"
+cyclonedx-python-lib = "^5.0.0"
 packageurl-python = "^0.11.1"
 
 
