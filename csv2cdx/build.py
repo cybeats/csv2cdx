@@ -5,13 +5,16 @@ from cyclonedx.model.component import ComponentType, Component
 from cyclonedx.model import OrganizationalEntity, OrganizationalContact, XsUri
 from cyclonedx.model import HashAlgorithm, HashType, ExternalReference, ExternalReferenceType
 from cyclonedx.factory.license import LicenseFactory
-from cyclonedx.output import get_instance, BaseOutput, OutputFormat
+from cyclonedx.output import BaseOutput, OutputFormat
+from cyclonedx.output.json import JsonV1Dot5
+from cyclonedx.output.json import Json as JsonOutputter
 from packageurl import PackageURL
 from pathlib import Path
 from time import sleep
 import os
 import warnings
 from .cy_api import cybeats_API
+from abc import ABC
 #warnings.filterwarnings("ignore", message="The Component this BOM is describing None has no defined dependencies which means the Dependency Graph is incomplete - you should add direct dependencies to this Componentto complete the Dependency Graph data.")
 
 lc_factory = LicenseFactory()
@@ -330,11 +333,10 @@ class Builder:
                                         name=setup_data.get("sbom_name"), 
                                         version=setup_data.get("sbom_version"),
                                         type=ComponentType(setup_data.get("sbom_type")),
-                                        namespace= setup_data.get("namespace"),
+                                        # namespace= setup_data.get("namespace"),
                                         purl=self.make_purl(setup_data.get("package_type"), setup_data.get("sbom_name"),setup_data.get("sbom_version")),
 
                                     )
-        #metadata_component = None
 
         return  metadata_component,metadata_manufacture, metadata_supplier
     
@@ -361,17 +363,21 @@ class Builder:
             )
         
         bom.register_dependency(metadata_component, components)
-        outputter: BaseOutput = get_instance(bom=bom, output_format=OutputFormat.JSON)
+
+        # bom = JsonV1Dot5(bom=bom)
+        my_json_outputter: 'JsonOutputter' = JsonV1Dot5(bom)
+        out_bom = my_json_outputter.output_as_string(indent=4)
         print("SBOM assembled, outputting to {}".format(self.output_file))
-        #outputter.output_to_file(self.output_file)
         try:
-            outputter.output_to_file(self.output_file)
+            with open(self.output_file, "w") as f:
+                f.write(out_bom)
         except FileExistsError:
             answer = input("This sbom file already exists. do you want to overwrite? (Y/N):   ")
             if answer == ("y" or "Y"):
                 print("Overwriting file...")
                 os.remove(self.output_file)
-                outputter.output_to_file(self.output_file)
+                with open(self.output_file, "w") as f:
+                    f.write(out_bom)
             else:
                 print("OK then")
         print("Finished. Have a nice day!")
