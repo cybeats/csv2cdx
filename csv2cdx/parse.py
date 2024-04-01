@@ -5,7 +5,7 @@ from cyclonedx.model.bom import Bom, BomMetaData
 from cyclonedx.model.component import ComponentType, Component
 from cyclonedx.model import OrganizationalEntity, OrganizationalContact, XsUri
 from uuid import uuid4
-from cyclonedx.output import get_instance, BaseOutput, OutputFormat
+from cyclonedx.output import BaseOutput, OutputFormat
 import re
 from packageurl import PackageURL
 from pathlib import Path
