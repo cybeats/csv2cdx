@@ -159,7 +159,7 @@ class Builder:
         if package == None:
             package = 'generic'
         name = name.replace(" ", "_")
-        purl = "pkg:{}/{}@{}".format(package, name, version)
+        purl = f"pkg:{package}/{name}@{version}"
         purl_formatted  = PackageURL.from_string(purl)
         return purl_formatted
     
@@ -196,8 +196,7 @@ class Builder:
             purl=None
 
         if (purl is None) and (self.arg_data.get("add_purl") is True):
-            purl = self.make_purl("generic", name, version)
-
+            purl = self.make_purl("generic", csv_data.get(name), csv_data.get(version))
         api_name = None
         api_version = None
         api_licenses = []
