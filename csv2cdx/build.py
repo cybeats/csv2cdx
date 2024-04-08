@@ -3,20 +3,24 @@ import json
 from cyclonedx.model.bom import Bom, BomMetaData
 from cyclonedx.model.component import ComponentType, Component
 from cyclonedx.model import OrganizationalEntity, OrganizationalContact, XsUri
-from cyclonedx.model import HashAlgorithm, HashType, License, LicenseChoice, ExternalReference, ExternalReferenceType
-from cyclonedx.output import get_instance, BaseOutput, OutputFormat
+from cyclonedx.model import HashAlgorithm, HashType, ExternalReference, ExternalReferenceType
+from cyclonedx.factory.license import LicenseFactory
+from cyclonedx.output import BaseOutput, OutputFormat
+from cyclonedx.output.json import JsonV1Dot5
+from cyclonedx.output.json import Json as JsonOutputter
 from packageurl import PackageURL
 from pathlib import Path
 from time import sleep
 import os
 import warnings
 from .cy_api import cybeats_API
-warnings.filterwarnings("ignore", message="The Component this BOM is describing None has no defined dependencies which means the Dependency Graph is incomplete - you should add direct dependencies to this Componentto complete the Dependency Graph data.")
+from abc import ABC
+#warnings.filterwarnings("ignore", message="The Component this BOM is describing None has no defined dependencies which means the Dependency Graph is incomplete - you should add direct dependencies to this Componentto complete the Dependency Graph data.")
+
+lc_factory = LicenseFactory()
 
 
-
-
-class Builder2:
+class Builder:
     def __init__(self, arg_data: dict,  csv_data :pd.DataFrame, json_data :dict):
         
         self.arg_data = arg_data
@@ -36,7 +40,7 @@ class Builder2:
         else:
             self.api = None
 
-        self.ouput_file = Path(self.arg_data.get("file"),"").stem + "_sbom.json"
+        self.output_file = Path(self.arg_data.get("file"),"").stem + "_sbom.json"
 
 
 
@@ -76,49 +80,11 @@ class Builder2:
         return licenses 
     
 
-    def get_license(self, license, csv_data):
-        url =csv_data.get(license.get("license_url"))
-        id=csv_data.get(license.get("license_id"))
-        name=csv_data.get(license.get("license_name"))
-        if url is not None:
-            url = XsUri(url)
-        if (name is None) and (id is None):
-            return
-        
-        license = License(  
-                            url=url,
-                            name=name,
-                            id=id
-                        )
-        license_choice = LicenseChoice( 
-                                        license=license
-                                    )
-        return license_choice
-    
     def get_licenses_from_api(self, licenses_from_api_) -> list:
         licenses_api = [self.get_license_from_api(license_api) for license_api in licenses_from_api_]
         licenses_api = [i for i in licenses_api if i is not None]
         return licenses_api 
     
-
-    def get_license_from_api(self, license_api_data):
-        url =license_api_data.get("url")
-        id=license_api_data.get("id")
-        name=license_api_data.get("name")
-        if url is not None:
-            url = XsUri(url)
-        if (name is None) and (id is None):
-            return
-        
-        license = License(  
-                            url=url,
-                            name=name,
-                            id=id
-                        )
-        license_choice = LicenseChoice( 
-                                        license=license
-                                    )
-        return license_choice
     
 
     def get_exRefs(self, references, csv_data) ->list:
@@ -185,15 +151,15 @@ class Builder2:
         cpe = cpe.split(":")
         if "cpe" != cpe[0]:
             return None 
-        cpe[-1] = ".*.*.*.*.*.*"
-        return cpe.join() 
+        cpe[-1] = "*:*:*:*:*:*"
+        return ":".join(cpe) 
     
     
     def make_purl(self, package, name, version):
         if package == None:
             package = 'generic'
         name = name.replace(" ", "_")
-        purl = "pkg:{}/{}@{}".format(package, name, version)
+        purl = f"pkg:{package}/{name}@{version}"
         purl_formatted  = PackageURL.from_string(purl)
         return purl_formatted
     
@@ -230,17 +196,19 @@ class Builder2:
             purl=None
 
         if (purl is None) and (self.arg_data.get("add_purl") is True):
-            purl = self.make_purl("generic", name, version)
+            purl = self.make_purl("generic", csv_data.get(name), csv_data.get(version))
+        api_name = None
+        api_version = None
+        api_licenses = []
         
         if self.api is not None:
             api_package_data = self.api.search_package(purl)
-            api_name = api_package_data.get("name")
-            api_version = api_package_data.get("version")
-            api_licenses = api_package_data.get("licenses")
-        else:
-            api_name = None
-            api_version = None
-            api_licenses = []
+            if api_package_data is not None:
+                api_name = api_package_data.get("name")
+                api_version = api_package_data.get("version")
+                api_licenses = api_package_data.get("licenses")
+
+            
 
         
 
@@ -256,9 +224,7 @@ class Builder2:
 
 
         if licenses is not None and any(any(license.values()) for license in licenses):
-            licenses = self.get_licenses(licenses, csv_data)
-        elif api_licenses is not None:
-            licenses = self.get_licenses_from_api(api_licenses)
+            licenses = [lc_factory.make_from_string(lic) for lic in licenses]
         else:
             licenses = None
 
@@ -366,11 +332,10 @@ class Builder2:
                                         name=setup_data.get("sbom_name"), 
                                         version=setup_data.get("sbom_version"),
                                         type=ComponentType(setup_data.get("sbom_type")),
-                                        namespace= setup_data.get("namespace"),
+                                        # namespace= setup_data.get("namespace"),
                                         purl=self.make_purl(setup_data.get("package_type"), setup_data.get("sbom_name"),setup_data.get("sbom_version")),
 
                                     )
-        #metadata_component = None
 
         return  metadata_component,metadata_manufacture, metadata_supplier
     
@@ -393,19 +358,25 @@ class Builder2:
 
         bom = Bom(
                     components=components,
-                    metadata=metadata
+                    metadata=metadata,
             )
-        outputter: BaseOutput = get_instance(bom=bom, output_format=OutputFormat.JSON)
-        print("SBOM assembled, outputting to {}".format(self.ouput_file))
-        #outputter.output_to_file(self.ouput_file)
+        
+        bom.register_dependency(metadata_component, components)
+
+        # bom = JsonV1Dot5(bom=bom)
+        my_json_outputter: 'JsonOutputter' = JsonV1Dot5(bom)
+        out_bom = my_json_outputter.output_as_string(indent=4)
+        print("SBOM assembled, outputting to {}".format(self.output_file))
         try:
-            outputter.output_to_file(self.ouput_file)
+            with open(self.output_file, "w") as f:
+                f.write(out_bom)
         except FileExistsError:
             answer = input("This sbom file already exists. do you want to overwrite? (Y/N):   ")
             if answer == ("y" or "Y"):
                 print("Overwriting file...")
-                os.remove(self.ouput_file)
-                outputter.output_to_file(self.ouput_file)
+                os.remove(self.output_file)
+                with open(self.output_file, "w") as f:
+                    f.write(out_bom)
             else:
                 print("OK then")
         print("Finished. Have a nice day!")

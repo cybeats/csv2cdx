@@ -5,11 +5,12 @@ from cyclonedx.model.bom import Bom, BomMetaData
 from cyclonedx.model.component import ComponentType, Component
 from cyclonedx.model import OrganizationalEntity, OrganizationalContact, XsUri
 from uuid import uuid4
-from cyclonedx.output import get_instance, BaseOutput, OutputFormat
+from cyclonedx.output import BaseOutput, OutputFormat
 import re
 from packageurl import PackageURL
 from pathlib import Path
 import argparse
+
 
 
 
@@ -22,7 +23,7 @@ class Parser:
         self.json_data = {}
         self.arg_data = {}
 
-    def get_args(self) -> dict:
+    def get_args(self, args=None) -> dict:
 
         parser = argparse.ArgumentParser(description="csv2cdx")
 
@@ -46,7 +47,7 @@ class Parser:
         parser.add_argument("-ak", type=str, required=False, help="cybeats access key(optional)", default=None)
         parser.add_argument("-sk", type=str, required=False, help="cybeats secret key(optional)", default=None)
 
-        args=parser.parse_args()
+        args=parser.parse_args(args)
     
         parameters = {}
 
@@ -140,5 +141,3 @@ class Parser:
         return self.arg_data, self.csv_data, self.json_data
 
                                                                                                                                                                                                                                                                                                                                                                                                       
-
-
