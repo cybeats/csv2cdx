@@ -11,7 +11,7 @@ repository = "https://github.com/cybeats/csv2cdx"
 [tool.poetry.dependencies]
 python = "^3.8"
 pandas = "^2.0.2"
-cyclonedx-python-lib = "^6.0.0"
+cyclonedx-python-lib = "^7.4.0"
 packageurl-python = "^0.11.1"
 requests = "^2.32.2"
 pathlib = "^1.0.1"

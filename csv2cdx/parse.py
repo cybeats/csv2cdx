@@ -3,7 +3,7 @@ import json
 import cyclonedx
 from cyclonedx.model.bom import Bom, BomMetaData
 from cyclonedx.model.component import ComponentType, Component
-from cyclonedx.model import OrganizationalEntity, OrganizationalContact, XsUri
+from cyclonedx.model import XsUri
 from uuid import uuid4
 from cyclonedx.output import BaseOutput, OutputFormat
 import re
