@@ -10,55 +10,31 @@ import re
 from packageurl import PackageURL
 from pathlib import Path
 import argparse
-
-
+from .template import create_template_file
 
 
 
 class Parser:
 
     #def __init__(self, excel_file:str, json_file:str) -> None:
-    def __init__(self) -> None:
+    def __init__(self, args) -> None:
         self.csv_data = {}
         self.json_data = {}
         self.arg_data = {}
+        self.args = args
 
-    def get_args(self, args=None) -> dict:
-
-        parser = argparse.ArgumentParser(description="csv2cdx")
-
-        #required arguements
-        parser.add_argument("-c", type=str, required=True, help="json configuration file")
-        parser.add_argument("-f", type=str, required=True, help="excel file")
-        parser.add_argument("-pt", type=str, required=True, help="package type")
-        parser.add_argument("-t", type=str, required=True, help="sbom type")
-        parser.add_argument("-pn", type=str, required=True, help="sbom component name")
-        parser.add_argument("-pv", type=str, required=True, help="sbom component version")
-
-        #optional arguements
-        parser.add_argument("-mn", type=str, required=False, help="manufacturer name (optional)", default=None)
-        parser.add_argument("-sn", type=str, required=False, help="supplier name (optional)", default=None)
-        parser.add_argument("-ns", type=str, required=False, help="namespace (optional)", default=None)
-        parser.add_argument("-cw", type=bool, required=False, help="cpe wildcard (optional)" , default=None)
-        parser.add_argument("-ap", type=bool, required=False, help="add purl (optional)", default=False)
-        parser.add_argument("-cnt", type=bool, required=False, help="csv no title (optional)", default=False)
-        parser.add_argument("-api", type=bool, required=False, help="utilize cybeats api(optional)", default=False)
-        parser.add_argument("-url", type=str, required=False, help="cybeats api url(optional)", default=None)
-        parser.add_argument("-ak", type=str, required=False, help="cybeats access key(optional)", default=None)
-        parser.add_argument("-sk", type=str, required=False, help="cybeats secret key(optional)", default=None)
-
-        args=parser.parse_args(args)
-    
+    def get_args(self, args) -> dict:
+   
         parameters = {}
 
         #required parameters
         try:
-            parameters["json"] = args.c 
-            parameters["file"] = args.f
-            parameters["package_type"] = args.pt
-            parameters["sbom_type"] = args.t
-            parameters["sbom_name"] = args.pn
-            parameters["sbom_version"] = args.pv
+            parameters["json"] = args.get("c") 
+            parameters["file"] = args.get("f")
+            parameters["package_type"] = args.get("pt")
+            parameters["sbom_type"] = args.get("t")
+            parameters["sbom_name"] = args.get("pn")
+            parameters["sbom_version"] = args.get("pv")
         except Exception as err:
             print(err)
             print("Exiting...")
@@ -66,23 +42,23 @@ class Parser:
 
         #optional parameters
         try:
-            parameters["manufacturer_name"] = args.mn
-            parameters["supplier_name"] = args.sn
-            parameters["namespace"] = args.ns
-            parameters["cpe_wildcard"] = args.cw
-            parameters["add_purl"] = args.ap
-            parameters["csv_no_title"] = args.cnt
-            parameters["use_api"] = args.api
-            parameters["api_url"] = args.url
-            parameters["access_key"] = args.ak
-            parameters["secret_key"] = args.sk
+            parameters["manufacturer_name"] = args.get("mn")
+            parameters["supplier_name"] = args.get("sn")
+            parameters["namespace"] = args.get("ns")
+            parameters["cpe_wildcard"] = args.get("cw")
+            parameters["add_purl"] = args.get("ap")
+            parameters["csv_no_title"] = args.get("cnt")
+            parameters["use_api"] = args.get("api")
+            parameters["api_url"] = args.get("url")
+            parameters["access_key"] = args.get("ak")
+            parameters["secret_key"] = args.get("sk")
 
 
         except Exception as err:
             print(err)
             print("Exiting...")
             exit(0)
-
+            
         return parameters
 
 
@@ -134,7 +110,7 @@ class Parser:
         
     #gets all arguement, csv and json data
     def get_data(self) -> dict:
-        self.arg_data = self.get_args()
+        self.arg_data = self.get_args(self.args)
         self.csv_data = self.read_csv(self.arg_data.get("file"))
         self.json_data = self.read_json(self.arg_data.get("json"))
 
