@@ -7,9 +7,11 @@ from packageurl import PackageURL
 
 from cyclonedx.model.bom import Bom, BomMetaData
 from cyclonedx.model.component import ComponentType, Component
-from cyclonedx.model import HashAlgorithm, HashType, ExternalReference, ExternalReferenceType, OrganizationalContact, OrganizationalEntity, XsUri
+from cyclonedx.model import HashAlgorithm, HashType, ExternalReference, ExternalReferenceType, XsUri
+from cyclonedx.model.contact import OrganizationalEntity
+from cyclonedx.model.contact import OrganizationalContact
 from cyclonedx.factory.license import LicenseFactory
-from cyclonedx.output import get_instance, BaseOutput, OutputFormat
+from cyclonedx.output import BaseOutput, OutputFormat
 
 json_file = "test-data/example_config.json"
 csv_file = "test-data/example_data.csv"
@@ -70,14 +72,25 @@ check = {
         }
     
 
-testargs = [
-                    "-c", "test-data/example_config.json", 
-                    "-f", "test-data/example_data.csv", 
-                    "-t", "application", 
-                    "-pn", "example", 
-                    "-pv", "1.0.0", 
-                    "-pt", "generic"
-                ]
+testargs = {
+            'subcommand': 'build', 
+            "c": "test-data/example_config.json", 
+            "f": "test-data/example_data.csv", 
+            'pt': 'generic', 
+            't': 'application', 
+            'pn': 'example', 
+            'pv': '1.0.0', 
+            'mn': None, 
+            'sn': None, 
+            'ns': None, 
+            'cw': None, 
+            'ap': False, 
+            'cnt': False, 
+            'api': False, 
+            'url': None, 
+            'ak': None, 
+            'sk': None
+        }
 
 testout = {
                 "json":"test-data/example_config.json", 
@@ -103,11 +116,9 @@ testout = {
 
 
 
+parser = Parser(testargs)
 
-
-parser = Parser()
-
-arg_data = parser.get_args(testargs)
+arg_data = parser.get_args(parser.args)
 csv_data = parser.read_csv(csv_file)
 json_data = parser.read_json(json_file)
 

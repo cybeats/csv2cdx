@@ -1,14 +1,13 @@
 import pytest
 from packageurl import PackageURL
 from csv2cdx.cy_api import cybeats_API
-import requests
 import os
 
 
 def test_params():
-    url =  os.environ.get("URL")
-    access_key = os.environ.get("ACCESS_KEY")
-    secret_key = os.environ.get("SECRET_KEY")
+    url =  os.environ.get("APIURL")
+    access_key = os.environ.get("ACCESSKEY")
+    secret_key = os.environ.get("SECRETKEY")
     purl = PackageURL.from_string('pkg:pypi/appkit@0.2.8')
 
     pkg = "pypi"

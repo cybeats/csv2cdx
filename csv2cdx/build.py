@@ -2,13 +2,15 @@ import pandas as pd
 import json
 from cyclonedx.model.bom import Bom, BomMetaData
 from cyclonedx.model.component import ComponentType, Component
-from cyclonedx.model import OrganizationalEntity, OrganizationalContact, XsUri
+from cyclonedx.model import XsUri
 from cyclonedx.model import HashAlgorithm, HashType, ExternalReference, ExternalReferenceType
 from cyclonedx.factory.license import LicenseFactory
 from cyclonedx.output import BaseOutput, OutputFormat
 from cyclonedx.output.json import JsonV1Dot5
 from cyclonedx.output.json import Json as JsonOutputter
 from packageurl import PackageURL
+from cyclonedx.model.contact import OrganizationalEntity
+from cyclonedx.model.contact import OrganizationalContact
 from pathlib import Path
 from time import sleep
 import os

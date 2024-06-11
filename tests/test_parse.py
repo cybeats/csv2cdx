@@ -3,11 +3,30 @@ import csv2cdx.parse
 from csv2cdx.parse import Parser
 import pandas as pd
 
+testargs = {
+                'subcommand': 'build', 
+                "c": "test-data/example_config.json", 
+                "f": "test-data/example_data.csv", 
+                'pt': 'generic', 
+                't': 'application', 
+                'pn': 'example', 
+                'pv': '1.0.0', 
+                'mn': None, 
+                'sn': None, 
+                'ns': None, 
+                'cw': None, 
+                'ap': False, 
+                'cnt': False, 
+                'api': False, 
+                'url': None, 
+                'ak': None, 
+                'sk': None
+            }
 
 json_file = "test-data/example_config.json"
 csv_file = "test-data/example_data.csv"
 
-parser = Parser()
+parser = Parser(testargs)
 
 
     
@@ -90,28 +109,53 @@ def test_csv_info():
 
 
 def test_arg_type():
-    testargs = [
-                    "-c", "test-data/example_config.json", 
-                    "-f", "test-data/example_data.csv", 
-                    "-t", "application", 
-                    "-pn", "example", 
-                    "-pv", "1.0.0", 
-                    "-pt", "generic"
-                ]
+    
+    testargs = {
+                'subcommand': 'build', 
+                "c": "test-data/example_config.json", 
+                "f": "test-data/example_data.csv", 
+                'pt': 'generic', 
+                't': 'application', 
+                'pn': 'example', 
+                'pv': '1.0.0', 
+                'mn': None, 
+                'sn': None, 
+                'ns': None, 
+                'cw': None, 
+                'ap': False, 
+                'cnt': False, 
+                'api': False, 
+                'url': None, 
+                'ak': None, 
+                'sk': None
+            }
+    
     ret = parser.get_args(testargs)
     assert type(ret) == dict
 
 
 
 def test_arg_info():
-    testargs = [
-                "-c", "test-data/example_config.json", 
-                "-f", "test-data/example_data.csv", 
-                "-t", "application", 
-                "-pn", "example", 
-                "-pv", "1.0.0", 
-                "-pt", "generic"
-            ]
+    
+    testargs = {
+                'subcommand': 'build', 
+                "c": "test-data/example_config.json", 
+                "f": "test-data/example_data.csv", 
+                'pt': 'generic', 
+                't': 'application', 
+                'pn': 'example', 
+                'pv': '1.0.0', 
+                'mn': None, 
+                'sn': None, 
+                'ns': None, 
+                'cw': None, 
+                'ap': False, 
+                'cnt': False, 
+                'api': False, 
+                'url': None, 
+                'ak': None, 
+                'sk': None
+            }
     
     testout = {
                 "json":"test-data/example_config.json", 
