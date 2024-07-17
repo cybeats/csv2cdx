@@ -282,6 +282,14 @@ class Builder:
 
                                     )
         
+        
+        if self.arg_data.get("parse_compound") is True:
+            name_ver = name.split(" ")
+            new_version = name_ver[-1].strip()
+            new_name = " ".join(name_ver[:-1]).strip()
+            sbom_component.name = new_name
+            sbom_component.version = new_version
+
         return sbom_component
 
             

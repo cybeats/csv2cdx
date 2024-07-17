@@ -35,6 +35,7 @@ def main():
     build.add_argument("-url", type=str, required=False, help="cybeats api url(optional)", default=None)
     build.add_argument("-ak", type=str, required=False, help="cybeats access key(optional)", default=None)
     build.add_argument("-sk", type=str, required=False, help="cybeats secret key(optional)", default=None)
+    build.add_argument("-pvc", type=bool, required=False, help="parse compound version", default=False)
 
     args = parser.parse_args()
     values = vars(args)
