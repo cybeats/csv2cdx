@@ -52,6 +52,7 @@ class Parser:
             parameters["api_url"] = args.get("url")
             parameters["access_key"] = args.get("ak")
             parameters["secret_key"] = args.get("sk")
+            parameters["parse_compound"] = args.get("pvc")
 
 
         except Exception as err:

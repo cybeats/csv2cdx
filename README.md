@@ -179,6 +179,7 @@ Additionally there are optional flags for additional configuration:
 * -url:  "cybeats api url". Adds the cybeats api url.
 * -ak:  "cybeats access key". Adds your cybeats api access key.
 * -sk:  "cybeats secret key". Adds your cybeats api secret key.
+* -pvc: "parse compound version". Treats a compounded "name version" name column as a compound column. Splits name and version and applies them to the SBOM.
 
 #### Output
 
