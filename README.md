@@ -29,7 +29,11 @@ pip install git+https://github.com/cybeats/csv2cdx.git@main
 * Navigate to the dist/ folder in the repository
 * Download the csv2cdx-(version)-py3-none-any.whl file
 * Navigate to the file's location in your terminal/command prompt
-* Install with command: `pip install csv2cdx-(version)-py3-none-any.whl file`
+* Install with command: 
+
+    ```bash
+    pip install csv2cdx-(version)-py3-none-any.whl file
+    ```
 
 
 ##### Via Project
@@ -180,6 +184,7 @@ Additionally there are optional flags for additional configuration:
 * -ak:  "cybeats access key". Adds your cybeats api access key.
 * -sk:  "cybeats secret key". Adds your cybeats api secret key.
 * -pvc: "parse compound version". Treats a compounded "name version" name column as a compound column. Splits name and version and applies them to the SBOM.
+* -format: "format". defines SBOM output format (json or xml). Default is json.
 
 #### Output
 
