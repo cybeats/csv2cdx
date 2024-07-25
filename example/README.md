@@ -12,5 +12,5 @@ The csv file contains synthetic data containing component :
 A resulting sbom json file can be made by running the command
 
 ```bash
-python3 -m csv2cdx -pn csv2cdx_example -pv 1.0.0 -t application -c example_config.json -f example_data.csv -pt generic 
+python3 -m csv2cdx build -pn csv2cdx_example -pv 1.0.0 -t application -c config.json -f example.csv -pt generic 
 ```

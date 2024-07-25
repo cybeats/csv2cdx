@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "csv2cdx"
-version = "2.0.0"
+version = "2.0.1"
 description = "CLI tool to convert excel and csv files to CycloneDX JSON files"
 authors = ["Richard_E <restwick@cybeats.com>", "Cybeats <cs@cybeats.com"]
 license = "MIT"

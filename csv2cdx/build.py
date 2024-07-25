@@ -1,23 +1,16 @@
 import pandas as pd
-import json
 from cyclonedx.model.bom import Bom, BomMetaData
 from cyclonedx.model.component import ComponentType, Component
 from cyclonedx.model import XsUri
 from cyclonedx.model import HashAlgorithm, HashType, ExternalReference, ExternalReferenceType
 from cyclonedx.factory.license import LicenseFactory
-from cyclonedx.output import BaseOutput, OutputFormat
-from cyclonedx.output.json import JsonV1Dot5
-from cyclonedx.output.json import Json as JsonOutputter
 from packageurl import PackageURL
 from cyclonedx.model.contact import OrganizationalEntity
 from cyclonedx.model.contact import OrganizationalContact
+from cyclonedx.schema import OutputFormat, SchemaVersion
+from cyclonedx.output import make_outputter, BaseOutput
 from pathlib import Path
-from time import sleep
-import os
-import warnings
 from .cy_api import cybeats_API
-from abc import ABC
-#warnings.filterwarnings("ignore", message="The Component this BOM is describing None has no defined dependencies which means the Dependency Graph is incomplete - you should add direct dependencies to this Componentto complete the Dependency Graph data.")
 
 lc_factory = LicenseFactory()
 
@@ -41,8 +34,11 @@ class Builder:
                 self.api = None
         else:
             self.api = None
+        self.file = arg_data.get("file")
+        self.filename = Path(self.file).stem
+        self.format = arg_data.get("format", "json")
+        self.output_file = f"{self.filename}_sbom.{self.format}"
 
-        self.output_file = Path(self.arg_data.get("file"),"").stem + "_sbom.json"
 
 
 
@@ -51,7 +47,6 @@ class Builder:
         try:
             res = HashAlgorithm(algorithm)
         except:
-            #res = None
             pass
         return res
     
@@ -121,7 +116,6 @@ class Builder:
                                             )
         except:
 
-            #contacts = None
             pass
         return contacts
 
@@ -166,14 +160,13 @@ class Builder:
         return purl_formatted
     
 
-    def build_component(self, iteration:int, total:int, csv_data:pd.DataFrame, config_data:dict) -> Component:
+    def build_component(self, iteration:int, total:int, csv_data:pd.Series, config_data:dict) -> Component:
 
         percentage = ((iteration + 1) / total * 100)
         print("\rGetting components-{}%".format(int(percentage)), sep=' ', end='', flush=True)
-    
+
         name = config_data.get("name")
         version = config_data.get("version")
-        # type = config_data.get("type")
         bom_ref = config_data.get("bom_ref")
         group = config_data.get("group")
         publisher = config_data.get("publisher")
@@ -191,6 +184,7 @@ class Builder:
         evidence = config_data.get("evidence")
         releaseNotes = config_data.get("releaseNotes")
         copyright = config_data.get("copyright")
+
 
         try:
             purl = PackageURL.from_string(csv_data.get(purl))
@@ -215,11 +209,11 @@ class Builder:
         
 
         name = csv_data.get(name, api_name)
+
         if name is None:
             return None
         
         version = csv_data.get(version, api_version)
-        # type = ComponentType(csv_data.get(type))
         bom_ref = csv_data.get(bom_ref)
         group = csv_data.get(group)
         publisher = csv_data.get(publisher)
@@ -321,7 +315,6 @@ class Builder:
                                                             contacts=  setup_data.get("manufacturer_contact")
                                                        )
         except:
-            #metadata_manufacture = None
             pass
 
         try:    
@@ -334,7 +327,6 @@ class Builder:
             else:
                 metadata_supplier = None  
         except:
-            #metadata_supplier = None
             pass
             
 
@@ -356,37 +348,44 @@ class Builder:
     def build_sbom(self):
         print("Assembling SBOM...")
         metadata_component,metadata_manufacture, metadata_supplier = self.create_metadata(self.arg_data)
+
         metadata = BomMetaData(
                                 component=metadata_component,
                                 manufacture=metadata_manufacture,
                                 supplier=metadata_supplier
 
                             )
+        
         components=self.assemble_components(self.csv_data, self.json_data)
         components = [i for i in components if i is not None]
         
 
         bom = Bom(
                     components=components,
-                    metadata=metadata,
-            )
+                    metadata=metadata 
+                )
         
         bom.register_dependency(metadata_component, components)
 
-        # bom = JsonV1Dot5(bom=bom)
-        my_json_outputter: 'JsonOutputter' = JsonV1Dot5(bom)
-        out_bom = my_json_outputter.output_as_string(indent=4)
-        print("SBOM assembled, outputting to {}".format(self.output_file))
-        try:
-            with open(self.output_file, "w") as f:
-                f.write(out_bom)
-        except FileExistsError:
-            answer = input("This sbom file already exists. do you want to overwrite? (Y/N):   ")
-            if answer == ("y" or "Y"):
-                print("Overwriting file...")
-                os.remove(self.output_file)
-                with open(self.output_file, "w") as f:
-                    f.write(out_bom)
-            else:
-                print("OK then")
-        print("Finished. Have a nice day!")
+        output_format_dict = {"xml":OutputFormat.XML, "json": OutputFormat.JSON}
+
+        out:BaseOutput = make_outputter(
+                                            bom=bom, 
+                                            output_format=output_format_dict.get(self.format), 
+                                            schema_version=SchemaVersion.V1_5
+                                        )
+        
+        
+        print(f"SBOM assembled, outputting to {self.output_file} file")
+        
+        if Path(self.output_file).is_file():
+            res = input("File already exists. Overwrite? (Y/N): ")
+            if res.lower() != 'y':
+                print("Exiting...")
+                exit(0)
+
+        out.output_to_file(
+                            filename=self.output_file, 
+                            allow_overwrite=True, 
+                            indent=4
+                        )

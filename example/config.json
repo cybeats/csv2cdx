@@ -1,0 +1,41 @@
+{
+    "api_url": null,
+    "component_configuration": {
+        "name": "name",
+        "version": "version",
+        "type": null,
+        "bom-ref": null,
+        "group": null,
+        "publisher": null,
+        "purl": "purl",
+        "licenses": [
+            {
+                "license_name": null,
+                "license_url": null,
+                "license_id": null
+            }
+        ],
+        "hashes": [
+            {
+                "hash_alg": null,
+                "hash_content": null
+            }
+        ],
+        "externalReferences": [
+            {
+                "er_type": null,
+                "er_url": null
+            }
+        ],
+        "mime type": null,
+        "description":"description",
+        "author": "author",
+        "cpe": "cpe",
+        "swid": null,
+        "pedigree": null,
+        "components": null,
+        "evidence": null,
+        "releaseNotes": null,
+        "copyright": null
+    }
+}

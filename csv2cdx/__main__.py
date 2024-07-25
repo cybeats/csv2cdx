@@ -36,6 +36,8 @@ def main():
     build.add_argument("-ak", type=str, required=False, help="cybeats access key(optional)", default=None)
     build.add_argument("-sk", type=str, required=False, help="cybeats secret key(optional)", default=None)
     build.add_argument("-pvc", type=bool, required=False, help="parse compound version", default=False)
+    build.add_argument("-format", type=str, required=False, help="sbom format [json, xml], default json", default="json")
+
 
     args = parser.parse_args()
     values = vars(args)
