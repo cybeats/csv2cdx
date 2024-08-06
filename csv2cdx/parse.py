@@ -1,16 +1,6 @@
 import pandas as pd
 import json
-import cyclonedx
-from cyclonedx.model.bom import Bom, BomMetaData
-from cyclonedx.model.component import ComponentType, Component
-from cyclonedx.model import XsUri
-from uuid import uuid4
-from cyclonedx.output import BaseOutput, OutputFormat
-import re
-from packageurl import PackageURL
 from pathlib import Path
-import argparse
-from .template import create_template_file
 
 
 

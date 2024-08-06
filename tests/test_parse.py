@@ -173,11 +173,15 @@ def test_arg_info():
                 "use_api":False,
                 "api_url":None,
                 "access_key":None,
-                "secret_key":None 
+                "secret_key":None,
+                "parse_compound":None,
+                "format":None
 
             }
     
     ret = parser.get_args(testargs)
+    print(ret)
+    print(testout)
     assert ret == testout  
 
 

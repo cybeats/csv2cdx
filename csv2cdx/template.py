@@ -1,20 +1,26 @@
 import json
-import os
+from pathlib import Path
 
-filename = "config_template.json"
+default_filename = "config_template.json"
 
-filepath = f"{os.getcwd()}/{filename}"
-
-data = {
-  "api_url": None,
-  "component_configuration": {
+configs = {
+    "bom-ref": None,
     "name": None,
     "version": None,
-    "type": None,
-    "bom-ref": None,
     "group": None,
     "publisher": None,
     "purl": None,
+    "mime type": None,
+    "description": None,
+    "author": None,
+    "cpe": None,
+    "swid": None,
+    "pedigree": None,
+    "components": None,
+    "evidence": None,
+    "releaseNotes": None,
+    "copyright": None,
+    "supplier":None,
     "licenses": [
       {
         "license_name": None,
@@ -33,25 +39,15 @@ data = {
         "er_type": None,
         "er_url": None
       }
-    ],
-    "mime type": None,
-    "description": None,
-    "author": None,
-    "cpe": None,
-    "swid": None,
-    "pedigree": None,
-    "components": None,
-    "evidence": None,
-    "releaseNotes": None,
-    "copyright": None
-  }
+    ]
 }
 
 
 def create_template_file(filename):
-    if filename is None:
-        filename = "config_template"
-    
-    filepath = f"{os.getcwd()}/{filename}.json"
-    with open(filepath, "w") as fp:
-        json.dump(data, fp, indent=4)
+    file_name = filename if filename is not None else default_filename
+    config_file = Path(file_name)
+    config_file.write_text(json.dumps(configs, indent=4))
+
+
+
+

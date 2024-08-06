@@ -68,34 +68,13 @@ The .json configuration file is neccessary to translate the headers (or indexes)
 
 ```json
 {
-  "api_url":null,
-  "component_configuration": {
+    "bom-ref": null,
     "name": null,
     "version": null,
     "type": null,
-    "bom-ref": null,
     "group": null,
     "publisher": null,
     "purl": null,
-    "licenses": [
-      {
-        "license_name": null,
-        "license_url": null,
-        "license_id": null
-      }
-    ],
-    "hashes": [
-      {
-        "hash_alg": null,
-        "hash_content": null
-      }
-    ],
-    "externalReferences": [
-      {
-        "er_type": null,
-        "er_url": null
-      }
-    ],
     "mime type": null,
     "description": null,
     "author": null,
@@ -105,8 +84,26 @@ The .json configuration file is neccessary to translate the headers (or indexes)
     "components": null,
     "evidence": null,
     "releaseNotes": null,
-    "copyright": null
-  }
+    "copyright": null,
+    "licenses": [
+        {
+            "license_name": null,
+            "license_url": null,
+            "license_id": null
+        }
+    ],
+    "hashes": [
+        {
+            "hash_alg": null,
+            "hash_content": null
+        }
+    ],
+    "externalReferences": [
+        {
+            "er_type": null,
+            "er_url": null
+        }
+    ]
 }
 ```
 
