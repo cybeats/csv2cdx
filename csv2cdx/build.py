@@ -63,15 +63,18 @@ class Builder:
     def get_licenses(self, license_config, csv_data) -> list:
         licenses = []
         for lic in license_config.get('licenses'):
-                
-                if not any(lic.values()):
-                    continue
 
+            x = [self.get_val(i, csv_data, lic) for i in lic.keys()]
+            if (any(lic.values())) and (any(x)) and (x[0]):
                 licenses.append(lc_factory.make_from_string(
                                                                 value=self.get_val('license_name', csv_data, lic)
                                                             )
                                                         ) 
+            else:
+                 continue
+
         licenses = [x for x in licenses if x is not None]
+
         return licenses
     
     def get_hashes(self, hashes_config, csv_data) -> list:
@@ -81,13 +84,16 @@ class Builder:
 
             if not any(hash.values()):
                 continue
-
-            hashes.append(
-                            HashType(
-                                        alg=HashAlgorithm(self.get_val('hash_alg', csv_data, hash)),
-                                        content= self.get_val('hash_content', csv_data, hash)
-                                    )
-                        ) 
+            x = [self.get_val(i, csv_data, hash) for i in hash.keys()]
+            if all(hash.values()) and all(x):
+                hashes.append(
+                                HashType(
+                                            alg=HashAlgorithm(self.get_val('hash_alg', csv_data, hash)),
+                                            content= self.get_val('hash_content', csv_data, hash)
+                                        )
+                            ) 
+            else:
+                 continue
         hashes = [x for x in hashes if x is not None]
         return hashes
     
@@ -95,19 +101,19 @@ class Builder:
         exrefs = []
         
         for exref in exref_config.get('externalReferences'):
-            if not all(exref.values()):
-                continue
 
             type = self.get_val('er_type', csv_data, exref)
             url =  self.get_val('er_url', csv_data, exref)
+            if (all(exref.values())) and (all([type, url])):
+                exrefs.append(
+                                ExternalReference(
+                                                    type=ExternalReferenceType(type),
+                                                    url=XsUri(url)
 
-            exrefs.append(
-                            ExternalReference(
-                                                type=ExternalReferenceType(type),
-                                                url=XsUri(url)
-
-                                            )
-                        ) 
+                                                )
+                            )
+            else:
+                 continue 
         exrefs = [x for x in exrefs if x is not None]
         return exrefs
         

@@ -1,5 +1,7 @@
 csv2cdx/__pycache__/
 tests/.pytest_cache__/
 tests/__pycache__/
+example_sbom.json
+example/example_sbom.json
 .vscode/
 .env
