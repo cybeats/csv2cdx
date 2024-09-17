@@ -2,7 +2,7 @@ import pandas as pd
 from cyclonedx.model.bom import Bom, BomMetaData
 from cyclonedx.model.component import ComponentType, Component
 from cyclonedx.model import XsUri
-from cyclonedx.model import HashAlgorithm, HashType, ExternalReference, ExternalReferenceType
+from cyclonedx.model import HashAlgorithm, HashType, ExternalReference, ExternalReferenceType, Tool
 from cyclonedx.factory.license import LicenseFactory
 from cyclonedx.model.license import LicenseExpression
 from packageurl import PackageURL
@@ -12,6 +12,7 @@ from cyclonedx.output import make_outputter, BaseOutput
 from pathlib import Path
 from .cy_api import cybeats_API
 from .template import configs
+import csv2cdx
 
 lc_factory = LicenseFactory()
 
@@ -221,6 +222,25 @@ class Builder:
                                     supplier=metadata_supplier
 
                                 )
+            metadata.tools.add(
+                                Tool(
+                                        name="csv2cdx",
+                                        version=csv2cdx.__version__,
+                                        vendor="Cybeats Technologies",
+                                        external_references=[
+                                            ExternalReference(
+                                                type=ExternalReferenceType.VCS,
+                                                url=XsUri('https://github.com/cybeats/csv2cdx')
+                                            ),
+
+                                            ExternalReference(
+                                                type=ExternalReferenceType.WEBSITE,
+                                                url=XsUri('https://github.com/cybeats/csv2cdx/#readme')
+                                            )
+
+                                        ]
+                                    )
+                            )
             
             components=self.assemble_components(self.csv_data, self.json_data)
             components = [i for i in components if i is not None]

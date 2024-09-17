@@ -2,9 +2,10 @@ from .template import create_template_file
 from .parse import Parser
 from .build import Builder
 import argparse
+import csv2cdx
 
 def main():
-    parser = argparse.ArgumentParser(description="csv2cdx")
+    parser = argparse.ArgumentParser(description=f"csv2cdx v{csv2cdx.__version__}")
     subparsers = parser.add_subparsers(dest='subcommand', required=False)
 
     template = subparsers.add_parser("template", help="Generates json configuration template file. Run csv2cdx template -h for more details")
