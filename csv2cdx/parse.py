@@ -3,7 +3,6 @@ import json
 from pathlib import Path
 
 
-
 class Parser:
 
     #def __init__(self, excel_file:str, json_file:str) -> None:
@@ -12,6 +11,8 @@ class Parser:
         self.json_data = {}
         self.arg_data = {}
         self.args = args
+        self.config_message = '\nWarning. Config files of the format:\n\r{"component_configuration":{config-data}}\n\rare deprecated.\n\rConfig files of format:\n\r{config-data}\n\rare now standard\n'
+
 
     def get_args(self, args) -> dict:
    
@@ -96,6 +97,9 @@ class Parser:
         data = {}
         with open(file, "r") as jd: 
             data = json.load(jd)
+            if 'component_configuration' in data.keys():
+                print(self.config_message)
+                data = data.get('component_configuration')
         print("JSON {filename} loaded".format(filename=file))
         return data
     

@@ -150,7 +150,7 @@ For array fields such as licenses, hashes and external references, the requisite
 The basic command format to create a sbom json is the following:
 
 ```bash
-python3 -m csv2cdx.py build -f (csv file path) -c (configuration json file path) -pn (name of sbom)  -pv (sbom version) -t (sbom type) -pt (sbom package type)
+python3 -m csv2cdx build -f (csv file path) -c (configuration json file path) -pn (name of sbom)  -pv (sbom version) -t (sbom type) -pt (sbom package type)
 ```
 
 This command utilizes all neccessary flags:
