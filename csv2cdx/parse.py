@@ -1,17 +1,6 @@
 import pandas as pd
 import json
-import cyclonedx
-from cyclonedx.model.bom import Bom, BomMetaData
-from cyclonedx.model.component import ComponentType, Component
-from cyclonedx.model import XsUri
-from uuid import uuid4
-from cyclonedx.output import BaseOutput, OutputFormat
-import re
-from packageurl import PackageURL
 from pathlib import Path
-import argparse
-from .template import create_template_file
-
 
 
 class Parser:
@@ -22,6 +11,8 @@ class Parser:
         self.json_data = {}
         self.arg_data = {}
         self.args = args
+        self.config_message = '\nWarning. Config files of the format:\n\r{"component_configuration":{config-data}}\n\rare deprecated.\n\rConfig files of format:\n\r{config-data}\n\rare now standard\n'
+
 
     def get_args(self, args) -> dict:
    
@@ -53,6 +44,7 @@ class Parser:
             parameters["access_key"] = args.get("ak")
             parameters["secret_key"] = args.get("sk")
             parameters["parse_compound"] = args.get("pvc")
+            parameters["format"] = args.get("format")
 
 
         except Exception as err:
@@ -105,6 +97,9 @@ class Parser:
         data = {}
         with open(file, "r") as jd: 
             data = json.load(jd)
+            if 'component_configuration' in data.keys():
+                print(self.config_message)
+                data = data.get('component_configuration')
         print("JSON {filename} loaded".format(filename=file))
         return data
     

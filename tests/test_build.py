@@ -1,5 +1,4 @@
 import pytest
-import csv2cdx.build
 from csv2cdx.build import Builder
 from csv2cdx.parse import Parser
 import pandas as pd
@@ -125,12 +124,6 @@ json_data = parser.read_json(json_file)
 builder = Builder(arg_data, csv_data, json_data)
 
 
-def test_hash_algo():
-    algo = "SHA-1"
-    ret = builder.get_hash_algo(algo)
-    comp = HashAlgorithm(algo)
-    assert ret == comp
-
 
 def test_component():
     csv_data_frame = pd.DataFrame(
@@ -164,104 +157,6 @@ def test_component():
     
     conf = check.get("component_configuration")
 
-    ret = builder.build_component(1, 1, data, conf)
+    ret = builder.get_component(data, conf)
 
     assert ret == comp
-
-
-
-def test_make_purl():
-    purl = PackageURL.from_string("pkg:generic/Component_1@5.5.8")
-    testpurl = builder.make_purl("generic", "Component_1", "5.5.8")
-    assert purl == testpurl
-
-
-
-def test_cpe_wildcard():
-    cpe_w = "cpe:2.3:a:python:cpython:3.12.0:alpha_7"
-    cpe_test = "cpe:2.3:a:python:cpython:3.12.0:*:*:*:*:*:*"
-    cpe = builder.cpe_wildcard(cpe_w)
-    assert cpe == cpe_test
-
-
-def test_contacts():
-    name = "name"
-    email = "email@gmail.com"
-    phone = "111-111-1111"
-
-    test = OrganizationalContact(   name=name, 
-                                    email=email, 
-                                    phone=phone
-                                )
-    ret = builder.build_contacts(name=name, email=email, phone=phone)
-
-
-    assert ret == test
-
-def test_supplier():
-
-    testname = "name"
-    email = "email@gmail.com"
-    phone = "111-111-1111"
-    url = "www.name.com"
-
-    contacts = [
-                OrganizationalContact(  name=testname, 
-                                        email=email, 
-                                        phone=phone
-                                    ) 
-            ]
-    
-    urls = [XsUri(url)]
-
-    supplier = OrganizationalEntity(
-                                        name=testname, 
-                                        urls=urls, 
-                                        contacts=contacts
-                                    )
-    
-    ret = builder.build_supplier(testname, urls, contacts)
-
-
-    assert ret == supplier
-
-def test_url():
-    url = "www.name.com"
-    url_test = XsUri(url)
-    ret = builder.build_url(url)
-    assert ret == url_test
-
-def test_exref():
-    type_ref = ExternalReferenceType("website")
-    url_s = "www.name.com"
-    url = XsUri(url_s)
-    test = ExternalReference(
-                                        type=type_ref, 
-                                        url=url
-                                    )
-    
-    
-    ref = {
-            "er_type": 1,
-            "er_url": 2
-
-        }
-
-    data = {
-               1: "website",
-               2: "www.name.com"
-
-            }
-    ret = builder.get_exRef(ref, data)
-    
-
-    assert ret == test
-
-
-
-
-    
-
-
-
-

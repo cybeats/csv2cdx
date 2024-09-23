@@ -53,7 +53,7 @@ class cybeats_API():
             self.have_data = False
             return -1
         data_list = ret_data["entities"][0].get("components")
-        data_dict = {PackageURL.from_string(package.get("purl")):package  for package in data_list if package.get("purl") is not None}
+        data_dict = {PackageURL.from_string(package.get("purl")):package  for package in data_list if package.get("purl") is not None and package.get("purl").count(":") < 2}
         self.have_data = True
         return data_dict
     

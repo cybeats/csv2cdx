@@ -29,7 +29,11 @@ pip install git+https://github.com/cybeats/csv2cdx.git@main
 * Navigate to the dist/ folder in the repository
 * Download the csv2cdx-(version)-py3-none-any.whl file
 * Navigate to the file's location in your terminal/command prompt
-* Install with command: `pip install csv2cdx-(version)-py3-none-any.whl file`
+* Install with command: 
+
+    ```bash
+    pip install csv2cdx-(version)-py3-none-any.whl file
+    ```
 
 
 ##### Via Project
@@ -64,34 +68,13 @@ The .json configuration file is neccessary to translate the headers (or indexes)
 
 ```json
 {
-  "api_url":null,
-  "component_configuration": {
+    "bom-ref": null,
     "name": null,
     "version": null,
     "type": null,
-    "bom-ref": null,
     "group": null,
     "publisher": null,
     "purl": null,
-    "licenses": [
-      {
-        "license_name": null,
-        "license_url": null,
-        "license_id": null
-      }
-    ],
-    "hashes": [
-      {
-        "hash_alg": null,
-        "hash_content": null
-      }
-    ],
-    "externalReferences": [
-      {
-        "er_type": null,
-        "er_url": null
-      }
-    ],
     "mime type": null,
     "description": null,
     "author": null,
@@ -101,8 +84,26 @@ The .json configuration file is neccessary to translate the headers (or indexes)
     "components": null,
     "evidence": null,
     "releaseNotes": null,
-    "copyright": null
-  }
+    "copyright": null,
+    "licenses": [
+        {
+            "license_name": null,
+            "license_url": null,
+            "license_id": null
+        }
+    ],
+    "hashes": [
+        {
+            "hash_alg": null,
+            "hash_content": null
+        }
+    ],
+    "externalReferences": [
+        {
+            "er_type": null,
+            "er_url": null
+        }
+    ]
 }
 ```
 
@@ -149,7 +150,7 @@ For array fields such as licenses, hashes and external references, the requisite
 The basic command format to create a sbom json is the following:
 
 ```bash
-python3 -m csv2cdx.py build -f (csv file path) -c (configuration json file path) -pn (name of sbom)  -pv (sbom version) -t (sbom type) -pt (sbom package type)
+python3 -m csv2cdx build -f (csv file path) -c (configuration json file path) -pn (name of sbom)  -pv (sbom version) -t (sbom type) -pt (sbom package type)
 ```
 
 This command utilizes all neccessary flags:
@@ -180,6 +181,7 @@ Additionally there are optional flags for additional configuration:
 * -ak:  "cybeats access key". Adds your cybeats api access key.
 * -sk:  "cybeats secret key". Adds your cybeats api secret key.
 * -pvc: "parse compound version". Treats a compounded "name version" name column as a compound column. Splits name and version and applies them to the SBOM.
+* -format: "format". defines SBOM output format (json or xml). Default is json.
 
 #### Output
 

@@ -1,14 +1,11 @@
-import csv2cdx
-import sys
-import json
-import os
 from .template import create_template_file
 from .parse import Parser
 from .build import Builder
 import argparse
+import csv2cdx
 
 def main():
-    parser = argparse.ArgumentParser(description="csv2cdx")
+    parser = argparse.ArgumentParser(description=f"csv2cdx v{csv2cdx.__version__}")
     subparsers = parser.add_subparsers(dest='subcommand', required=False)
 
     template = subparsers.add_parser("template", help="Generates json configuration template file. Run csv2cdx template -h for more details")
@@ -36,6 +33,8 @@ def main():
     build.add_argument("-ak", type=str, required=False, help="cybeats access key(optional)", default=None)
     build.add_argument("-sk", type=str, required=False, help="cybeats secret key(optional)", default=None)
     build.add_argument("-pvc", type=bool, required=False, help="parse compound version", default=False)
+    build.add_argument("-format", type=str, required=False, help="sbom format [json, xml], default json", default="json")
+
 
     args = parser.parse_args()
     values = vars(args)
