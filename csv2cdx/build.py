@@ -129,7 +129,7 @@ class Builder:
             if res:
                 setattr(component, 'purl', PackageURL.from_string(res))
 
-            if self.add_purl:
+            if self.add_purl and component.name and component.version:
                 purl = PackageURL(type=self.arg_data.get('package_type'), name=component.name.replace(" ", "-"), version=component.version)
                 setattr(component, 'purl', purl)                                          
                 
@@ -203,11 +203,13 @@ class Builder:
             except:
                 pass
 
+            print(setup_data)
+
             metadata_component = Component(
                                             name=setup_data.get("sbom_name"), 
                                             version=setup_data.get("sbom_version"),
                                             type=ComponentType(setup_data.get("sbom_type")),
-                                            purl=PackageURL(setup_data.get("package_type"), setup_data.get("sbom_name"),setup_data.get("sbom_version")),
+                                            purl=PackageURL(type=setup_data.get("package_type"), name=setup_data.get("sbom_name"), version=setup_data.get("sbom_version"))
                                         )
 
             return  metadata_component,metadata_manufacture, metadata_supplier
