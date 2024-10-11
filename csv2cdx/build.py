@@ -203,8 +203,6 @@ class Builder:
             except:
                 pass
 
-            print(setup_data)
-
             metadata_component = Component(
                                             name=setup_data.get("sbom_name"), 
                                             version=setup_data.get("sbom_version"),
