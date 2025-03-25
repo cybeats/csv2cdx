@@ -7,25 +7,29 @@ configs = {
     "bom-ref": None,
     "name": None,
     "version": None,
+    "type":None,
     "group": None,
     "publisher": None,
     "purl": None,
-    "mime type": None,
     "description": None,
     "author": None,
     "cpe": None,
-    "swid": None,
-    "pedigree": None,
-    "components": None,
-    "evidence": None,
-    "releaseNotes": None,
     "copyright": None,
-    "supplier":None,
+    "supplier":{
+        "supplier_name":None,
+        "supplier_urls":[None],
+        "supplier_contacts":[
+            {
+                "contact_name":None,
+                "contact_email":None,
+                "contact_phone":None
+            }
+        ]
+    },
     "licenses": [
       {
         "license_name": None,
         "license_url": None,
-        "license_id": None
       }
     ],
     "hashes": [

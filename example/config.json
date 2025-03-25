@@ -2,36 +2,39 @@
     "bom-ref": null,
     "name": "name",
     "version": "version",
-    "type": null,
-    "group": null,
-    "publisher": "organization",
+    "type":"type",
+    "group": "group",
+    "publisher": "publisher",
     "purl": "purl",
-    "mime type": null,
+    "mime_type": "mime_type",
     "description": "description",
     "author": "author",
     "cpe": "cpe",
-    "swid": null,
-    "pedigree": null,
-    "components": null,
-    "evidence": null,
-    "releaseNotes": null,
-    "copyright": null,
-    "supplier": null,
+    "copyright": "copyright",
+    "supplier": {
+        "supplier_name":"supplier",
+        "supplier_urls":["supp-url"],
+        "supplier_contacts":[
+            {
+                "contact_name":"supp-contact",
+                "contact_email":"supp-email",
+                "contact_phone":"supp-phone"
+            },
+            {
+                "contact_name":"supp-contact",
+                "contact_email":"supp-email",
+                "contact_phone":null
+            }
+        ]
+    },
     "licenses": [
         {
             "license_name": "license1",
-            "license_url": null,
-            "license_id": null
+            "license_url": "supp-url"
         },
         {
             "license_name": "license2",
-            "license_url": null,
-            "license_id": null
-        },
-        {
-            "license_name": null,
-            "license_url": null,
-            "license_id": null
+            "license_url": null
         }
     ],
     "hashes": [
@@ -41,13 +44,17 @@
         },
         {
             "hash_alg": "hash2alg",
-            "hash_content": "hash2content"
+            "hash_content": null
         }
     ],
     "externalReferences": [
         {
-            "er_type": null,
+            "er_type": "exref_type1",
             "er_url": null
+        },
+        {
+            "er_type": "exref_type2",
+            "er_url": "exref_url2"
         }
     ]
 }
