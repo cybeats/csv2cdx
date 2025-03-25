@@ -6,13 +6,14 @@ from cyclonedx.model import HashAlgorithm, HashType, ExternalReference, External
 from cyclonedx.factory.license import LicenseFactory
 from cyclonedx.model.license import LicenseExpression
 from packageurl import PackageURL
-from cyclonedx.model.contact import OrganizationalEntity
+from cyclonedx.model.contact import OrganizationalEntity, OrganizationalContact
 from cyclonedx.schema import OutputFormat, SchemaVersion
 from cyclonedx.output import make_outputter, BaseOutput
 from pathlib import Path
 from .cy_api import cybeats_API
 from .template import configs
 import csv2cdx
+import re
 
 lc_factory = LicenseFactory()
 
@@ -67,10 +68,14 @@ class Builder:
 
             x = [self.get_val(i, csv_data, lic) for i in lic.keys()]
             if (any(lic.values())) and (any(x)) and (x[0]):
-                licenses.append(lc_factory.make_from_string(
-                                                                value=self.get_val('license_name', csv_data, lic)
-                                                            )
-                                                        ) 
+                license = lc_factory.make_from_string(
+                                                        value=self.get_val('license_name', csv_data, lic),
+                                                        license_url=XsUri(self.get_val('license_url', csv_data, lic)) if self.get_val('license_url', csv_data, lic) else None                                       
+                                                    )
+                                                         
+                if type(license) is LicenseExpression:
+                     return [license]
+                licenses.append(license)
             else:
                  continue
 
@@ -118,6 +123,27 @@ class Builder:
         exrefs = [x for x in exrefs if x is not None]
         return exrefs
         
+    def get_contacts(self, contact_config, csv_data):
+        contacts = []
+        for contact in contact_config:
+            name = self.get_val('contact_name', csv_data, contact)
+            email = self.get_val('contact_email', csv_data, contact)
+            phone = self.get_val('contact_phone', csv_data, contact)
+            if not (name or email or phone):
+                 continue
+            contacts.append(
+                                OrganizationalContact(
+                                                        name=name,
+                                                        email=email,
+                                                        phone=phone
+                                                    )
+                            )
+        contacts = [x for x in contacts if x is not None]
+        if contacts is []:
+             contacts = None
+        return contacts
+            
+    
     def get_component(self, csv_data:pd.Series, config_data:dict) -> Component:
             component = Component(name='name')
             for key in configs.keys():
@@ -133,6 +159,7 @@ class Builder:
                 purl = PackageURL(type=self.arg_data.get('package_type'), name=component.name.replace(" ", "-"), version=component.version)
                 setattr(component, 'purl', purl)                                          
                 
+            
             licenses = self.get_licenses(config_data, csv_data)
             setattr(component, 'licenses', licenses)
 
@@ -141,6 +168,22 @@ class Builder:
 
             exrefs = self.get_exrefs(config_data, csv_data)
             setattr(component, 'external_references', exrefs)
+
+            if supp_dict := config_data.get("supplier"):
+                contact_list = supp_dict.get("supplier_contacts")
+                contacts = self.get_contacts(contact_list, csv_data)
+                name= supp_dict.get("supplier_name")
+                urls=[XsUri(csv_data.get(x)) if x else None for x in supp_dict.get("supplier_urls")]
+                urls = [x for x in urls if x is not None]
+                if urls is []:
+                    urls = None
+                if name or urls or contacts:
+                    supplier = OrganizationalEntity(
+                                                                    name=name,
+                                                                    urls=urls,
+                                                                    contacts= contacts
+                                        )
+                    setattr(component, 'supplier', supplier)
 
             if self.parse_compound:
                 name_ver = self.get_val('name', csv_data, config_data).split(" ")
@@ -161,6 +204,13 @@ class Builder:
                  cpe_wc[-1] = "*:*:*:*:*:*"
                  cpe_wc = ":".join(cpe_wc)
                  component.cpe = cpe_wc
+            
+
+            comptype = self.get_val('type', csv_data, config_data)
+            if comptype is not None and comptype in ComponentType:
+                setattr(component, 'type', ComponentType(comptype))
+            else:
+                setattr(component, 'type', ComponentType.LIBRARY)
             
             return component
 
@@ -185,8 +235,6 @@ class Builder:
                 if  setup_data.get("manufacturer_name") is not None:
                     metadata_manufacture = OrganizationalEntity(
                                                                 name= setup_data.get("manufacturer_name"),
-                                                                urls=  setup_data.get("manufacturer_url"), 
-                                                                contacts=  setup_data.get("manufacturer_contact")
                                                         )
             except:
                 pass
@@ -194,9 +242,7 @@ class Builder:
             try:    
                 if  setup_data.get("supplier_name") is not None:
                     metadata_supplier = OrganizationalEntity(
-                                                                name= setup_data.get("supplier_name"),
-                                                                urls=  setup_data.get("supplier_url"), 
-                                                                contacts=  setup_data.get("supplier_contact")
+                                                                name= setup_data.get("supplier_name")
                                                             )
                 else:
                     metadata_supplier = None  
@@ -247,8 +293,8 @@ class Builder:
             
 
             bom = Bom(
-                        components=components,
-                        metadata=metadata 
+                        metadata=metadata,
+                        components=components    
                     )
             
             bom.register_dependency(metadata_component, components)
@@ -256,10 +302,10 @@ class Builder:
             out:BaseOutput = make_outputter(
                                                 bom=bom, 
                                                 output_format=self.output_format, 
-                                                schema_version=SchemaVersion.V1_5
+                                                schema_version=SchemaVersion.V1_5,
+                                                
                                             )
-            
-            
+                        
             print(f"SBOM assembled, outputting to {self.output_file} file")
             
             if Path(self.output_file).is_file():

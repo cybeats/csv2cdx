@@ -4,4 +4,5 @@ tests/__pycache__/
 example_sbom.json
 example/example_sbom.json
 .vscode/
+.venv/
 .env
