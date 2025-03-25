@@ -172,7 +172,7 @@ class Builder:
             if supp_dict := config_data.get("supplier"):
                 contact_list = supp_dict.get("supplier_contacts")
                 contacts = self.get_contacts(contact_list, csv_data)
-                name= supp_dict.get("supplier_name")
+                name = self.get_val("supplier_name", csv_data, supp_dict)
                 urls=[XsUri(csv_data.get(x)) if x else None for x in supp_dict.get("supplier_urls")]
                 urls = [x for x in urls if x is not None]
                 if urls is []:
