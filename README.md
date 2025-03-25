@@ -75,21 +75,27 @@ The .json configuration file is neccessary to translate the headers (or indexes)
     "group": null,
     "publisher": null,
     "purl": null,
-    "mime type": null,
     "description": null,
     "author": null,
     "cpe": null,
-    "swid": null,
-    "pedigree": null,
-    "components": null,
-    "evidence": null,
-    "releaseNotes": null,
     "copyright": null,
+    "supplier": {
+        "supplier_name": null,
+        "supplier_urls": [
+            null
+        ],
+        "supplier_contacts": [
+            {
+                "contact_name": null,
+                "contact_email": null,
+                "contact_phone": null
+            }
+        ]
+    },
     "licenses": [
         {
             "license_name": null,
-            "license_url": null,
-            "license_id": null
+            "license_url": null
         }
     ],
     "hashes": [
