@@ -63,11 +63,11 @@ class Parser:
         print("Loading {filename}...".format(filename=file))
 
         if file_extension == ".xlsx":
-            file_data = pd.read_excel(file, header=header)
+            file_data = pd.read_excel(file, header=header, dtype=str, encoding_errors = 'replace')
         
         elif file_extension == ".csv":
-            file_data = pd.read_csv(file, header=header)
-        
+            file_data = pd.read_csv(file, header=header, dtype=str, encoding_errors = 'replace')
+
         else:
             print("Invalid data file, exiting...\n")
             exit(0)
