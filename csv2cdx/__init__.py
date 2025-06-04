@@ -1,3 +1,6 @@
 from importlib.metadata import version
 
-__version__ = version("csv2cdx")
+try:
+    __version__ = version("csv2cdx")
+except:
+    __version__ = "dev"
