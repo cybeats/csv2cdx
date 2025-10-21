@@ -6,3 +6,4 @@ example/example_sbom.json
 .vscode/
 .venv/
 .env
+csv2cdx.cdx.json
